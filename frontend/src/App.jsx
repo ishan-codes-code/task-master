@@ -35,11 +35,7 @@ function App() {
     }
   }, []);
 
-  // let decoded;
-  // if (accessToken) {
-  //   decoded = jwtDecode(accessToken);
-  //   console.log(decoded);
-  // }
+ 
 
   return (
     <div className="min-h-screen w-screen bg-gray-50">
