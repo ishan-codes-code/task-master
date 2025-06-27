@@ -1,0 +1,61 @@
+*{
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.2) transparent;
+}
+*::-webkit-scrollbar{
+  width: 4px;
+}
+*::-webkit-scrollbar-track{
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb{
+  background-color: rgba(0,0,0,0.2);
+  border-radius: 9999px;
+}
+
+.rdp-chevron{
+  fill: black !important;
+}
+.rdp-button_previous:hover , .rdp-button_next:hover{
+  background-color: 	#EDE9FE !important;
+}
+.rdp-day_button{
+  height: 30px !important;
+  width: 30px !important;
+}
+
+@keyframes colorSpin {
+  0% {
+    border-color: #8b5cf6 transparent #8b5cf6 #8b5cf6;
+  }
+  25% {
+    border-color: #ec4899 transparent #ec4899 #ec4899;
+  }
+  50% {
+    border-color: #f59e0b transparent #f59e0b #f59e0b;
+  }
+  75% {
+    border-color: #10b981 transparent #10b981 #10b981;
+  }
+  100% {
+    border-color: #8b5cf6 transparent #8b5cf6 #8b5cf6;
+  }
+}
+
+@keyframes drop {
+  0% {
+    transform: scale(0.2) translateY(-50px);
+    opacity:0;
+  }
+  60%{
+    transform: scale(1.1) translateY(10px);
+    opacity:1;
+  }
+  100% {
+    transform: scale(1) translateY(0px);
+  }
+}
+
+.dropAnimation{
+  animation: drop 0.5s ease-out forwards;
+}
