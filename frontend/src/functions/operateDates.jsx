@@ -32,3 +32,9 @@ export const isFutureDate = (value) => {
   inputDate.setHours(0, 0, 0, 0);
   return inputDate > today || "Please select a future date";
 };
+export const daysLeft = (date) => {
+    const dueDate = new Date(date);
+    const today = new Date();
+    const timeDiff = dueDate - today;
+    return Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+  };

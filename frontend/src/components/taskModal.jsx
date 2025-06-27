@@ -6,7 +6,7 @@ import { useMyContext } from "../context/Context";
 import api from "../service/apiService";
 import { isFutureDate } from "../functions/operateDates";
 
-export default function TaskModal({ isOpen, onClose, setProject, pId }) {
+export default function TaskModal({ isOpen, onClose, setProject, pId , setPage , setHasMore }) {
   const { isMobile, setTasksData } = useMyContext();
 
   useEffect(() => {
@@ -46,6 +46,15 @@ export default function TaskModal({ isOpen, onClose, setProject, pId }) {
       } else {
         reset();
       }
+      // for the fetching of the new task 
+       setTasksData({
+        tasks: [],
+        total: 0,
+        completed: 0,
+      });
+      setHasMore(true);
+      setPage(1);
+
       onClose();
     } catch (err) {
       showError(err.response?.data?.message || err.message, isMobile);
@@ -92,23 +101,7 @@ export default function TaskModal({ isOpen, onClose, setProject, pId }) {
               />
             </div>
 
-            {/* Description */}
-            <div className="flex flex-col gap-2 w-full">
-              <div className="flex justify-between">
-                <label htmlFor="taskDesc">Description</label>
-                <p className="text-gray-400 text-xs">(Optional)</p>
-              </div>
-              <textarea
-                id="taskDesc"
-                className="border bg-white w-full p-2 h-[30vh] border border-purple-600 rounded-lg"
-                {...register("desc", {
-                  minLength: {
-                    value: 3,
-                    message: "Description must be at least 3 characters",
-                  },
-                })}
-              />
-            </div>
+           
 
             {/* Due Date */}
             <div className="flex flex-col gap-2 w-full">

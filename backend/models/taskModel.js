@@ -7,11 +7,7 @@ const taskSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    desc: {
-      type: String,
-      default: "",
-      trim: true,
-    },
+   
     dueDate: {
       type: Date,
       default: null,

@@ -8,6 +8,7 @@ import { showError, showSuccess } from "../components/toaster";
 import { useMyContext } from "../context/Context";
 import { IoMdClose } from "react-icons/io";
 import { MdDelete, MdModeEdit } from "react-icons/md";
+import TaskOverview from "./taskOverview";
 
 export default function Tasks() {
   const { isMobile, tasksData, setTasksData } = useMyContext();
@@ -126,7 +127,7 @@ export default function Tasks() {
           </div>
         )}
       </div>
-      <div
+      {/* <div
         className={
           showRightCon === 2
             ? "md:w-[50%] h-full w-full absolute z-40 md:static px-6 py-4 flex flex-col items-center overflow-auto bg-white/70 backdrop-blur-md shadow-lg"
@@ -152,14 +153,7 @@ export default function Tasks() {
             </h4>
             <p className="capitalize">{operateTask.title}</p>
           </div>
-          <div className="relative border border-purple-600 w-full p-4 ">
-            <h4 className="text-sm font-medium absolute -top-2 bg-white">
-              Description
-            </h4>
-            <p className="capitalize">
-              {operateTask.desc ? operateTask.desc : "No Description"}
-            </p>
-          </div>
+          
           <div className="flex items-center justify-between gap-2">
             <button
               className="bg-red-100 hover:bg-red-200 text-red-700 px-3 py-2 lg:px-4 rounded-md font-medium flex items-center gap-2 transition"
@@ -187,7 +181,10 @@ export default function Tasks() {
           </div>
         </div>
         {operateTask._id}
-      </div>
+      </div> */}
+      {showRightCon === 2 && <TaskOverview task={operateTask} />}
+      
+
       <Modal
         isOpen={showModal}
         onClose={() => {

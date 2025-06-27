@@ -39,7 +39,7 @@ const addProject = async (req, res) => {
       const tasks = await taskModel.insertMany(
         req.body.addTasks.map((task) => ({
           title: task.title,
-          desc: task.description,
+         
           dueDate: req.body.pDueDate,
           userId: req.user._id,
         })),

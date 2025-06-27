@@ -4,6 +4,7 @@ import ScrollItem from "./scrollItem";
 import { Loader } from "./item";
 import { fetchTask } from "../functions/operateTasks";
 import { useMyContext } from "../context/Context";
+import { daysLeft } from "../functions/operateDates";
 
 function ShowTask({
   setOperateTask,
@@ -47,12 +48,7 @@ function ShowTask({
     fetchTask(page, setTasksData, setHasMore, setLoading);
   }, [page]);
 
-  const daysLeft = (date) => {
-    const dueDate = new Date(date);
-    const today = new Date();
-    const timeDiff = dueDate - today;
-    return Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-  };
+  
 
   return (
     <div className="overflow-y-auto h-[200px] py-2 rounded-lg space-y-4">
@@ -81,7 +77,7 @@ function ShowTask({
               setOperateTask(task);
               setShowRightCon(2);
             }}
-            styles="bg-white w-[90%] mx-auto cursor-pointer flex justify-between items-center p-2 h-auto rounded-lg hover:shadow-lg shadow-md"
+            styles="bg-white w-[90%] mx-auto cursor-pointer flex justify-between items-center p-2 max-w-xl h-auto rounded-lg hover:shadow-lg shadow-md"
             key={task._id}
           >
             <h3 className="text-md font-semibold text-gray-800">

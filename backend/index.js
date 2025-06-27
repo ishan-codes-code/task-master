@@ -16,7 +16,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
   cors({
     origin:
-      "https://1b57e44a-991a-4eb9-9662-666a3ba399d6-00-370g4lciek7gs.sisko.replit.dev:5173",
+      "http://localhost:5173",
     credentials: true,
   }),
 );

@@ -3,7 +3,7 @@ import { refreshAccessToken } from "./authService";
 
 const api = axios.create({
   baseURL:
-    "https://1b57e44a-991a-4eb9-9662-666a3ba399d6-00-370g4lciek7gs.sisko.replit.dev",
+    "http://localhost:3000",
   withCredentials: true,
 });
 

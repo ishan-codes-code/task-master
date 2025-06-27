@@ -15,13 +15,11 @@ const signupSchema = Joi.object({
   .trim()
   .min(6)
   .max(100)
-  .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,100}$/)
   .required()
   .messages({
     "string.empty": "Password is required",
     "string.min": "Password must be at least 6 characters",
     "string.max": "Password must not exceed 100 characters",
-    "string.pattern.base": "Password must have at least one uppercase letter, one lowercase letter, one number, and one special character",
   }),
 
 });
