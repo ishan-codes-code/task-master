@@ -37,7 +37,7 @@ export default function Bin() {
     data = { id: data };
     try {
       const response = await api.post("/task/delete", data);
-      console.log(response);
+      // console.log(response);
       // return response.data.droppedTasks;
       showDroppedTasks();
       showSuccess(response.data.message, isMobile);
