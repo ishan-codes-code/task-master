@@ -96,7 +96,7 @@ export default function Modal({
         console.log(cleanData);
         response = await api.put(
           `/task/update/${editTask.data._id}`,
-          cleanData,
+          cleanData
         );
       } else {
         response = await api.post("/task/add", data);

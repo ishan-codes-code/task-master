@@ -9,6 +9,7 @@ import { useMyContext } from "../context/Context";
 import { IoMdClose } from "react-icons/io";
 import { MdDelete, MdModeEdit } from "react-icons/md";
 import TaskOverview from "./taskOverview";
+import TaskModal from "./taskModal";
 
 export default function Tasks() {
   const { isMobile, tasksData, setTasksData } = useMyContext();
@@ -54,7 +55,11 @@ export default function Tasks() {
 
   return (
     <div className="h-full w-full flex md:flex-row flex-col">
-      <div className="px-6 py-4 h-full w-full">
+      <div
+        className={`px-6 py-4 h-full transition-[min-width] ${
+          showRightCon ? "md:min-w-[70%]" : "md:min-w-[100%]"
+        }`}
+      >
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-gray-800">Tasks</h1>
           <button
@@ -127,65 +132,16 @@ export default function Tasks() {
           </div>
         )}
       </div>
-      {/* <div
-        className={
-          showRightCon === 2
-            ? "md:w-[50%] h-full w-full absolute z-40 md:static px-6 py-4 flex flex-col items-center overflow-auto bg-white/70 backdrop-blur-md shadow-lg"
-            : "hidden"
-        }
-      >
-        <div className="flex items-center w-full justify-between">
-          <h3 className="text-lg font-semibold">Task Overview</h3>
-          <button
-            onClick={() => {
-              setOperateTask([]);
-              setShowRightCon();
-            }}
-            className="text-black text-2xl hover:text-gray-700"
-          >
-            <IoMdClose />
-          </button>
-        </div>
-        <div className="w-full my-6 flex flex-col gap-6">
-          <div className="relative border border-purple-600 w-full p-4">
-            <h4 className="text-sm font-medium absolute -top-2 bg-white">
-              Title
-            </h4>
-            <p className="capitalize">{operateTask.title}</p>
-          </div>
-          
-          <div className="flex items-center justify-between gap-2">
-            <button
-              className="bg-red-100 hover:bg-red-200 text-red-700 px-3 py-2 lg:px-4 rounded-md font-medium flex items-center gap-2 transition"
-              to="/signup"
-              onClick={() => {
-                dropTask(operateTask._id);
-              }}
-            >
-              <MdDelete />
-              Drop
-            </button>
-            <button
-              className="bg-purple-100 hover:bg-purple-200 text-purple-700 px-3 py-2 lg:px-4 rounded-md font-medium flex items-center gap-2 transition"
-              onClick={() => {
-                setShowModal(true);
-                setEditTask({
-                  isEditing: true,
-                  data: operateTask,
-                });
-              }}
-            >
-              <MdModeEdit />
-              Edit
-            </button>
-          </div>
-        </div>
-        {operateTask._id}
-      </div> */}
-      {showRightCon === 2 && <TaskOverview task={operateTask} />}
-      
 
-      <Modal
+      {showRightCon === 2 && (
+        <TaskOverview
+          task={operateTask}
+          setShowRightCon={setShowRightCon}
+          setOperateTask={setOperateTask}
+        />
+      )}
+
+      <TaskModal
         isOpen={showModal}
         onClose={() => {
           setShowModal(false);
@@ -196,7 +152,6 @@ export default function Tasks() {
         }}
         setPage={setPage}
         setHasMore={setHasMore}
-        editTask={editTask}
       />
     </div>
   );

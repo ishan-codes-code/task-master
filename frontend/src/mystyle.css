@@ -1,25 +1,26 @@
-*{
+* {
   scrollbar-width: thin;
-  scrollbar-color: rgba(0,0,0,0.2) transparent;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
 }
-*::-webkit-scrollbar{
+*::-webkit-scrollbar {
   width: 4px;
 }
-*::-webkit-scrollbar-track{
+*::-webkit-scrollbar-track {
   background: transparent;
 }
-*::-webkit-scrollbar-thumb{
-  background-color: rgba(0,0,0,0.2);
+*::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
   border-radius: 9999px;
 }
 
-.rdp-chevron{
+.rdp-chevron {
   fill: black !important;
 }
-.rdp-button_previous:hover , .rdp-button_next:hover{
-  background-color: 	#EDE9FE !important;
+.rdp-button_previous:hover,
+.rdp-button_next:hover {
+  background-color: #ede9fe !important;
 }
-.rdp-day_button{
+.rdp-day_button {
   height: 30px !important;
   width: 30px !important;
 }
@@ -45,17 +46,41 @@
 @keyframes drop {
   0% {
     transform: scale(0.2) translateY(-50px);
-    opacity:0;
+    opacity: 0;
   }
-  60%{
+  60% {
     transform: scale(1.1) translateY(10px);
-    opacity:1;
+    opacity: 1;
   }
   100% {
     transform: scale(1) translateY(0px);
   }
 }
 
-.dropAnimation{
+@keyframes fade {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes fade-out {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.dropAnimation {
   animation: drop 0.5s ease-out forwards;
+}
+
+.fade-enter {
+  animation: fade 0.5s normal forwards ease-in-out;
+}
+.fade-exit {
+  animation: fade-out 0.3 normal forwards ease-in-out;
 }

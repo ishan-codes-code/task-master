@@ -64,7 +64,11 @@ export default function Dashboard() {
 
   return (
     <div className="h-full w-full flex md:flex-row flex-col  ">
-      <div className="px-6 overflow-auto w-full">
+      <div
+        className={`px-6 overflow-auto transition-[min-width] ${
+          showRightCon ? "md:min-w-[70%]" : "md:min-w-[100%]"
+        } `}
+      >
         <Navbar2 />
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-purple-50 border border-purple-100 rounded-lg p-2  sm:p-4">
@@ -138,7 +142,7 @@ export default function Dashboard() {
       <div
         className={
           showRightCon === 1
-            ? "md:w-[50%] h-full w-full absolute z-40 md:static px-6 py-4 flex flex-col items-center overflow-auto bg-white/70 backdrop-blur-md shadow-lg"
+            ? "md:w-[100%] h-full w-full absolute z-40 md:static px-6 py-4 flex flex-col items-center overflow-auto bg-white/70 backdrop-blur-md"
             : "hidden"
         }
       >
@@ -159,62 +163,14 @@ export default function Dashboard() {
         </div>
         <Calendar selectDate={selectDate} setSelectDate={setSelectDate} />
       </div>
-      {/* <div
-        className={
-          showRightCon === 2
-            ? "md:w-[50%] h-screen w-full absolute z-40 md:static px-6 py-4 flex flex-col items-center overflow-auto bg-white/70 backdrop-blur-md border border-l border-gray-200 "
-            : "hidden"
-        }
-      >
-        <div className="flex items-center w-full justify-between">
-          <h3 className="text-lg font-semibold">Task Overview</h3>
-          <button
-            onClick={() => {
-              setOperateTask([]);
-              setShowRightCon();
-            }}
-            className="text-black text-2xl hover:text-gray-700"
-          >
-            <IoMdClose />
-          </button>
-        </div>
-        <div className="w-full my-6 flex flex-col gap-6">
-          <div className="relative border border-purple-600 w-full p-4">
-            <h4 className="text-sm font-medium absolute -top-2 bg-white">
-              Title
-            </h4>
-            <p className="capitalize">{operateTask.title}</p>
-          </div>
-          
-          <div className="flex items-center justify-between gap-2">
-            <button
-              className="bg-red-100 hover:bg-red-200 text-red-700 px-3 py-2 lg:px-4 rounded-md font-medium flex items-center gap-2 transition"
-              to="/signup"
-              onClick={() => {
-                dropTask(operateTask._id);
-              }}
-            >
-              <MdDelete />
-              Drop
-            </button>
-            <button
-              className="bg-purple-100 hover:bg-purple-200 text-purple-700 px-3 py-2 lg:px-4 rounded-md font-medium flex items-center gap-2 transition"
-              onClick={() => {
-                setShowModal(true);
-                setEditTask({
-                  isEditing: true,
-                  data: operateTask,
-                });
-              }}
-            >
-              <MdModeEdit />
-              Edit
-            </button>
-          </div>
-        </div>
-        {operateTask._id}
-      </div> */}
-       {showRightCon === 2 && <TaskOverview task={operateTask} />}
+
+      {showRightCon === 2 && (
+        <TaskOverview
+          task={operateTask}
+          setShowRightCon={setShowRightCon}
+          setOperateTask={setOperateTask}
+        />
+      )}
 
       <TaskModal
         isOpen={showModal}

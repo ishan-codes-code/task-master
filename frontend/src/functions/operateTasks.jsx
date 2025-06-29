@@ -27,3 +27,33 @@ export const fetchTask = async (pageNum, setTasks, setHasMore, setLoading) => {
     if (setLoading) setLoading(false);
   }
 };
+
+export const updateTask = async (
+  taskId,
+  updates,
+  setTask,
+  setLoader,
+  setTasksData
+) => {
+  try {
+    if (setLoader) setLoader(true);
+    const response = await api.put(`/task/update/${taskId}`, updates);
+    const updatedTask = response.data.updatedTask;
+    if (setTask) setTask(updatedTask);
+    if (setTasksData)
+      setTasksData((prev) => {
+        const updatedTasks = prev.tasks.map((task) =>
+          task._id === updatedTask._id ? updatedTask : task
+        );
+        return {
+          tasks: updatedTasks,
+          total: prev.total,
+          completed: prev.completed,
+        };
+      });
+  } catch (err) {
+    console.log(err);
+  } finally {
+    if (setLoader) setLoader(false);
+  }
+};
