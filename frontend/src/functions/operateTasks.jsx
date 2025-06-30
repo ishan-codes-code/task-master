@@ -28,6 +28,15 @@ export const fetchTask = async (pageNum, setTasks, setHasMore, setLoading) => {
   }
 };
 
+export const fetchAllTasks = async () => {
+  try {
+    const response = await api.get("task/show");
+    console.log(response);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const updateTask = async (
   taskId,
   updates,

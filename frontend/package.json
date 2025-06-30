@@ -15,6 +15,7 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@tailwindcss/vite": "^4.0.17",
     "axios": "^1.8.4",
+    "classnames": "^2.5.1",
     "framer-motion": "^12.6.5",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.525.0",

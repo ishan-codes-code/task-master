@@ -43,42 +43,48 @@ const addTask = async (req, res) => {
 
 const showTask = async (req, res) => {
   // console.log(req.user);
-  const page = parseInt(req.query.page) || 1;
+  const page = parseInt(req.query.page) || 0;
   const limit = parseInt(req.query.limit) || 10;
   const skip = (page - 1) * limit;
 
-  try {
-    const [tasks, total, completed] = await Promise.all([
-      taskModel
-        .find({ userId: req.user._id, isDeleted: false })
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit),
-      taskModel.countDocuments({ userId: req.user._id, isDeleted: false }),
-      taskModel.countDocuments({
-        userId: req.user._id,
-        isDeleted: false,
-        isCompleted: true,
-      }),
-    ]);
+  if (page === 0) {
+    res
+      .status(200)
+      .json({ success: true, tasks: null, total: null, completed: null });
+  } else {
+    try {
+      const [tasks, total, completed] = await Promise.all([
+        taskModel
+          .find({ userId: req.user._id, isDeleted: false })
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(limit),
+        taskModel.countDocuments({ userId: req.user._id, isDeleted: false }),
+        taskModel.countDocuments({
+          userId: req.user._id,
+          isDeleted: false,
+          isCompleted: true,
+        }),
+      ]);
 
-    // 🔍 Debug logs
-    // console.log("Tasks:", tasks);
-    // console.log("Total:", total);
-    // console.log("Completed:", completed);
+      // Debug logs
+      // console.log("Tasks:", tasks);
+      // console.log("Total:", total);
+      // console.log("Completed:", completed);
 
-    res.status(200).json({
-      success: true,
-      tasks,
-      total,
-      completed,
-    });
-  } catch (error) {
-    console.error("Error in showTask:", error); // Add this too
-    res.status(500).json({
-      success: false,
-      message: "Internal Server Error",
-    });
+      res.status(200).json({
+        success: true,
+        tasks,
+        total,
+        completed,
+      });
+    } catch (error) {
+      console.error("Error in showTask:", error); // Add this too
+      res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+      });
+    }
   }
 };
 

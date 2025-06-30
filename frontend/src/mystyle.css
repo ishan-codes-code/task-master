@@ -2,6 +2,9 @@
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
 }
+body {
+  scroll-behavior: smooth;
+}
 *::-webkit-scrollbar {
   width: 4px;
 }

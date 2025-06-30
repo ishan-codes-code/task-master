@@ -6,7 +6,14 @@ import { useMyContext } from "../context/Context";
 import api from "../service/apiService";
 import { isFutureDate } from "../functions/operateDates";
 
-export default function TaskModal({ isOpen, onClose, setProject, pId , setPage , setHasMore }) {
+export default function TaskModal({
+  isOpen,
+  onClose,
+  setProject,
+  pId,
+  setPage,
+  setHasMore,
+}) {
   const { isMobile, setTasksData } = useMyContext();
 
   useEffect(() => {
@@ -46,8 +53,8 @@ export default function TaskModal({ isOpen, onClose, setProject, pId , setPage ,
       } else {
         reset();
       }
-      // for the fetching of the new task 
-       setTasksData({
+      // for the fetching of the new task
+      setTasksData({
         tasks: [],
         total: 0,
         completed: 0,
@@ -100,8 +107,6 @@ export default function TaskModal({ isOpen, onClose, setProject, pId , setPage ,
                 })}
               />
             </div>
-
-           
 
             {/* Due Date */}
             <div className="flex flex-col gap-2 w-full">

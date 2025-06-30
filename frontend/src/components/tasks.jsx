@@ -10,6 +10,7 @@ import { IoMdClose } from "react-icons/io";
 import { MdDelete, MdModeEdit } from "react-icons/md";
 import TaskOverview from "./taskOverview";
 import TaskModal from "./taskModal";
+import TaskBoard from "./taskCard";
 
 export default function Tasks() {
   const { isMobile, tasksData, setTasksData } = useMyContext();
@@ -53,10 +54,60 @@ export default function Tasks() {
     }
   };
 
+  const sampleTasks = [
+    {
+      id: 1,
+      title: "complete eng",
+      dueDate: "2025-07-02",
+      createdAt: "2025-06-28",
+    },
+    {
+      id: 2,
+      title: "complete bio",
+      dueDate: "2025-07-06",
+      createdAt: "2025-06-23",
+    },
+    {
+      id: 3,
+      title: "complete maths",
+      dueDate: "2025-08-10",
+      createdAt: "2025-06-27",
+    },
+    {
+      id: 4,
+      title: "complete maths",
+      dueDate: "2025-08-10",
+      createdAt: "2025-06-27",
+    },
+    {
+      id: 5,
+      title: "complete eng",
+      dueDate: "2025-07-02",
+      createdAt: "2025-06-28",
+    },
+    {
+      id: 6,
+      title: "complete eng",
+      dueDate: "2025-07-02",
+      createdAt: "2025-06-28",
+    },
+    {
+      id: 7,
+      title: "complete eng",
+      dueDate: "2025-07-02",
+      createdAt: "2025-06-28",
+    },
+    {
+      id: 8,
+      title: "complete eng",
+      dueDate: "2025-07-02",
+      createdAt: "2025-06-28",
+    },
+  ];
   return (
-    <div className="h-full w-full flex md:flex-row flex-col">
+    <div className="h-screen w-full flex md:flex-row flex-col">
       <div
-        className={`px-6 py-4 h-full transition-[min-width] ${
+        className={`px-6 py-4 flex-1 transition-[min-width] overflow-y-auto ${
           showRightCon ? "md:min-w-[70%]" : "md:min-w-[100%]"
         }`}
       >
@@ -69,7 +120,6 @@ export default function Tasks() {
             <FaPlus /> <p>New Task</p>
           </button>
         </div>
-
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <input
             type="text"
@@ -95,8 +145,7 @@ export default function Tasks() {
             </select>
           </div>
         </div>
-
-        {showTaskCon && (
+        {/* {showTaskCon && (
           <ShowTask
             setOperateTask={setOperateTask}
             setShowRightCon={setShowRightCon}
@@ -107,8 +156,8 @@ export default function Tasks() {
             status={status}
             sort={sort}
           />
-        )}
-        {!showTaskCon && (
+        )} */}
+        {/* {!showTaskCon && (
           <div className="w-full flex flex-col items-center gap-2">
             <p>
               No <span className="text-red-700">incomplete</span> task found{" "}
@@ -130,7 +179,8 @@ export default function Tasks() {
               Start Working
             </button>
           </div>
-        )}
+        )} */}
+        <TaskBoard tasks={sampleTasks} />;
       </div>
 
       {showRightCon === 2 && (
