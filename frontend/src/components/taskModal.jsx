@@ -14,7 +14,7 @@ export default function TaskModal({
   setPage,
   setHasMore,
 }) {
-  const { isMobile, setTasksData } = useMyContext();
+  const { isMobile, setTasksData, setTasks } = useMyContext();
 
   useEffect(() => {
     const escHandler = (e) => e.key === "Escape" && onClose();
@@ -41,6 +41,7 @@ export default function TaskModal({
   const onSubmit = async (data) => {
     try {
       const response = await api.post("/task/add", data);
+      console.log(response.data);
       showSuccess(response.data.message, isMobile);
 
       if (setProject) {
@@ -53,6 +54,8 @@ export default function TaskModal({
       } else {
         reset();
       }
+
+      setTasks((prev) => [...prev, response.data.task]);
       // for the fetching of the new task
       setTasksData({
         tasks: [],
@@ -110,15 +113,14 @@ export default function TaskModal({
 
             {/* Due Date */}
             <div className="flex flex-col gap-2 w-full">
-              <div className="flex justify-between">
-                <label htmlFor="taskDueDate">Select Due Date:</label>
-                <p className="text-gray-400 text-xs">(Optional)</p>
-              </div>
+              <label htmlFor="taskDueDate">Select Due Date:</label>
+
               <input
                 type="date"
                 id="taskDueDate"
                 className="border w-full bg-white p-2 border border-purple-600 rounded-lg"
                 {...register("dueDate", {
+                  required: "Due date is required",
                   validate: isFutureDate,
                 })}
               />

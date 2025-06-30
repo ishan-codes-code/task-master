@@ -10,10 +10,10 @@ import { IoMdClose } from "react-icons/io";
 import { MdDelete, MdModeEdit } from "react-icons/md";
 import TaskOverview from "./taskOverview";
 import TaskModal from "./taskModal";
-import TaskBoard from "./taskCard";
+import TaskBoard from "./taskBoard";
 
 export default function Tasks() {
-  const { isMobile, tasksData, setTasksData } = useMyContext();
+  const { isMobile, tasksData, setTasksData, tasks } = useMyContext();
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
   const [operateTask, setOperateTask] = useState([]);
@@ -54,56 +54,6 @@ export default function Tasks() {
     }
   };
 
-  const sampleTasks = [
-    {
-      id: 1,
-      title: "complete eng",
-      dueDate: "2025-07-02",
-      createdAt: "2025-06-28",
-    },
-    {
-      id: 2,
-      title: "complete bio",
-      dueDate: "2025-07-06",
-      createdAt: "2025-06-23",
-    },
-    {
-      id: 3,
-      title: "complete maths",
-      dueDate: "2025-08-10",
-      createdAt: "2025-06-27",
-    },
-    {
-      id: 4,
-      title: "complete maths",
-      dueDate: "2025-08-10",
-      createdAt: "2025-06-27",
-    },
-    {
-      id: 5,
-      title: "complete eng",
-      dueDate: "2025-07-02",
-      createdAt: "2025-06-28",
-    },
-    {
-      id: 6,
-      title: "complete eng",
-      dueDate: "2025-07-02",
-      createdAt: "2025-06-28",
-    },
-    {
-      id: 7,
-      title: "complete eng",
-      dueDate: "2025-07-02",
-      createdAt: "2025-06-28",
-    },
-    {
-      id: 8,
-      title: "complete eng",
-      dueDate: "2025-07-02",
-      createdAt: "2025-06-28",
-    },
-  ];
   return (
     <div className="h-screen w-full flex md:flex-row flex-col">
       <div
@@ -180,7 +130,12 @@ export default function Tasks() {
             </button>
           </div>
         )} */}
-        <TaskBoard tasks={sampleTasks} />;
+        <TaskBoard
+          tasks={tasks}
+          setOperateTask={setOperateTask}
+          setShowRightCon={setShowRightCon}
+        />
+        ;
       </div>
 
       {showRightCon === 2 && (

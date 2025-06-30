@@ -29,8 +29,9 @@ const addTask = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: "Task created successfully",
+      message: "Task created successfullyyyy",
       project: updatedProject,
+      task: savedTask,
     });
   } catch (error) {
     console.log(error);
@@ -48,9 +49,20 @@ const showTask = async (req, res) => {
   const skip = (page - 1) * limit;
 
   if (page === 0) {
-    res
-      .status(200)
-      .json({ success: true, tasks: null, total: null, completed: null });
+    try {
+      const tasks = await taskModel.find({
+        userId: req.user._id,
+        isDeleted: false,
+        projectId: null,
+      });
+      res.status(200).json({ success: true, tasks });
+    } catch (error) {
+      console.error("Error in showTask:", error);
+      res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+      });
+    }
   } else {
     try {
       const [tasks, total, completed] = await Promise.all([

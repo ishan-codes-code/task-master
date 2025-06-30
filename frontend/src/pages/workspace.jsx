@@ -1,8 +1,12 @@
 import { Outlet, useLocation } from "react-router-dom";
 import { Navbar2, Sidebar, MobileNavbar } from "../components/navbar";
 import { useState, useEffect } from "react";
+import { fetchAllTasks } from "../functions/operateTasks";
+import { useMyContext } from "../context/Context";
 
 export default function WorkSpace() {
+  const { setTasks } = useMyContext();
+
   const [showNav, setShowNav] = useState(true);
   const location = useLocation();
   useEffect(() => {
@@ -17,6 +21,10 @@ export default function WorkSpace() {
       setShowNav(true);
     }
   }, [location.pathname]);
+
+  useEffect(() => {
+    fetchAllTasks(setTasks);
+  }, []);
 
   return (
     <section className="flex flex-cols min-h-screen relative">

@@ -28,10 +28,13 @@ export const fetchTask = async (pageNum, setTasks, setHasMore, setLoading) => {
   }
 };
 
-export const fetchAllTasks = async () => {
+export const fetchAllTasks = async (setTasks) => {
   try {
     const response = await api.get("task/show");
-    console.log(response);
+    if (setTasks) {
+      const raw = response.data.tasks;
+      setTasks(Array.isArray(raw) ? raw : [raw]);
+    }
   } catch (error) {
     console.log(error);
   }
@@ -42,27 +45,33 @@ export const updateTask = async (
   updates,
   setTask,
   setLoader,
-  setTasksData
+  setTasks
 ) => {
   try {
     if (setLoader) setLoader(true);
     const response = await api.put(`/task/update/${taskId}`, updates);
     const updatedTask = response.data.updatedTask;
     if (setTask) setTask(updatedTask);
-    if (setTasksData)
-      setTasksData((prev) => {
-        const updatedTasks = prev.tasks.map((task) =>
-          task._id === updatedTask._id ? updatedTask : task
-        );
-        return {
-          tasks: updatedTasks,
-          total: prev.total,
-          completed: prev.completed,
-        };
+    if (setTasks)
+      setTasks((prev) => {
+        if (!Array.isArray(prev)) {
+          console.log("'prev' is not an array in setTasks:", prev);
+          return [updatedTask]; // Fallback: replace with single item array
+        }
+        return prev.map((t) => (t._id === updatedTask._id ? updatedTask : t));
       });
   } catch (err) {
     console.log(err);
   } finally {
     if (setLoader) setLoader(false);
+  }
+};
+
+export const dropTask = async (id, setTasks) => {
+  try {
+    const response = await api.patch(`/task/drop?id=${id}`);
+    if (setTasks) setTasks((prev) => prev.filter((task) => task._id !== id));
+  } catch (error) {
+    console.log(error);
   }
 };

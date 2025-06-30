@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import api from "../service/apiService";
 import {
   Trash2,
   CheckCircle,
@@ -17,17 +18,22 @@ import {
   isFutureDate,
 } from "../functions/operateDates";
 import { Loader, Indicator } from "./item";
-import { updateTask } from "../functions/operateTasks";
+import { updateTask, dropTask } from "../functions/operateTasks";
 import { showSuccess, showError } from "./toaster";
 import { useMyContext } from "../context/Context";
 
 const TaskOverview = ({ task, setShowRightCon, setOperateTask }) => {
-  const { isMobile, setTasksData } = useMyContext();
+  const { isMobile, setTasks } = useMyContext();
 
   const [title, setTitle] = useState(task.title);
   const [dueDate, setDueDate] = useState(task.dueDate.split("T")[0]);
   const [loader, setLoader] = useState(false);
   const [isEditingDueDate, setIsEditingDueDate] = useState(false);
+
+  useEffect(() => {
+    setTitle(task.title);
+    setDueDate(task.dueDate.split("T")[0]);
+  }, [task]);
 
   const handleToggleComplete = () => {
     if (task.isCompleted) {
@@ -36,7 +42,7 @@ const TaskOverview = ({ task, setShowRightCon, setOperateTask }) => {
         { isCompleted: false },
         setOperateTask,
         setLoader,
-        setTasksData
+        setTasks
       );
     } else {
       updateTask(
@@ -44,14 +50,21 @@ const TaskOverview = ({ task, setShowRightCon, setOperateTask }) => {
         { isCompleted: true },
         setOperateTask,
         setLoader,
-        setTasksData
+        setTasks
       );
     }
   };
 
-  const handleDropTask = () => {
-    // TODO: drop/delete task from backend
-    console.log("Task dropped:", task.id);
+  const handleDropTask = async () => {
+    try {
+      const response = await api.patch(`/task/drop?id=${task._id}`);
+      setTasks((prev) => prev.filter((t) => t._id !== task._id));
+      setShowRightCon();
+      setOperateTask({});
+      showSuccess(response.data.message);
+    } catch (error) {
+      showError(error.response?.data?.message || error.message);
+    }
   };
 
   const handleSave = () => {
@@ -63,7 +76,7 @@ const TaskOverview = ({ task, setShowRightCon, setOperateTask }) => {
       updates.dueDate = dueDate;
     }
     if (Object.keys(updates).length > 0) {
-      updateTask(task._id, updates, setOperateTask, setLoader, setTasksData);
+      updateTask(task._id, updates, setOperateTask, setLoader, setTasks);
     }
   };
 
