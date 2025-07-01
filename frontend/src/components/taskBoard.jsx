@@ -13,15 +13,13 @@ const TaskCard = ({ task, setOperateTask, setShowRightCon }) => {
   return (
     <button
       type="button"
-      className="bg-white rounded-2xl p-3 border w-full flex flex-col gap-1"
+      className="bg-white rounded-2xl p-3 border w-full flex flex-col items-start gap-1"
       onClick={() => {
         setOperateTask(task);
         setShowRightCon(2);
       }}
     >
-      <div className="text-gray-900 font-semibold text-base text-start">
-        {task.title}
-      </div>
+      <div className="text-gray-900 font-semibold text-base">{task.title}</div>
       <div className="flex flex-wrap items-center gap-2 mt-1">
         <div className="text-xs text-gray-500">
           Created {formatDistanceToNowStrict(new Date(task.createdAt))} ago
@@ -59,7 +57,9 @@ const TaskGroup = ({
     <div className="space-y-4 p-2 ">
       <h2 className="text-xl font-bold text-gray-800">{label}</h2>
       <div
-        className={`space-y-3 h-[${height}] overflow-y-auto scroll-smooth pr-4`}
+        className={`space-y-3 h-[${height}] overflow-y-auto ${
+          height === "400px" ? "pr-4" : ""
+        }`}
       >
         {filteredTasks.map((task) => (
           <TaskCard
@@ -74,7 +74,7 @@ const TaskGroup = ({
   );
 };
 
-function TaskBoard({ tasks, setOperateTask, setShowRightCon }) {
+function TaskBoard({ tasks, setOperateTask, setShowRightCon, showRightCon }) {
   if (!Array.isArray(tasks)) {
     return <div>Loading tasks...</div>; // or null
   }
@@ -93,7 +93,11 @@ function TaskBoard({ tasks, setOperateTask, setShowRightCon }) {
   });
 
   return (
-    <div className="flex gap-8">
+    <div
+      className={`flex flex-col sm:flex-row gap-8 w-full items-center justify-center sm:items-start ${
+        showRightCon && "flex-col-md-lg items-center-md-lg"
+      }`}
+    >
       <TaskGroup
         label="Due Soon"
         filteredTasks={dueSoon}

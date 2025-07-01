@@ -3,12 +3,14 @@ import api from "../service/apiService";
 import {
   Trash2,
   CheckCircle,
+  BadgeCheck,
   Clock,
   User,
   Hash,
   CalendarDays,
   RefreshCcw,
   CircleX,
+  X,
   AlertTriangle,
   CircleArrowUp,
 } from "lucide-react";
@@ -227,18 +229,30 @@ const TaskOverview = ({ task, setShowRightCon, setOperateTask }) => {
 
         <div className="flex items-center justify-between mt-6">
           <button
-            className={`px-4 py-2 rounded-md text-sm font-medium transition shadow ${moodStyles.toggleBtn}`}
+            title={moodStyles.toggleText}
+            className={`p-2 rounded-md text-sm font-medium transition shadow whitespace-nowrap flex items-center gap-2 ${moodStyles.toggleBtn}`}
             onClick={handleToggleComplete}
           >
-            {moodStyles.toggleText}
+            {task.isCompleted ? (
+              <X className="w-4 h-4" />
+            ) : (
+              <BadgeCheck className="w-4 h-4" />
+            )}
+
+            <span className="hidden sm:block md:hidden lg:block">
+              {moodStyles.toggleText}
+            </span>
           </button>
 
           <button
-            className="px-4 py-2 bg-red-100 text-red-600 hover:bg-red-200 rounded-md text-sm font-medium flex items-center gap-2 transition shadow"
+            title="Drop Task"
+            className="p-2 bg-red-100 text-red-600 hover:bg-red-200 rounded-md text-sm font-medium flex items-center gap-2 transition shadow whitespace-nowrap"
             onClick={handleDropTask}
           >
             <Trash2 className="w-4 h-4" />
-            Drop Task
+            <span className="hidden sm:block md:hidden lg:block">
+              Drop Task
+            </span>
           </button>
         </div>
       </div>

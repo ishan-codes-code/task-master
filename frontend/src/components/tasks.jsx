@@ -58,7 +58,9 @@ export default function Tasks() {
     <div className="h-screen w-full flex md:flex-row flex-col">
       <div
         className={`px-6 py-4 flex-1 transition-[min-width] overflow-y-auto ${
-          showRightCon ? "md:min-w-[70%]" : "md:min-w-[100%]"
+          showRightCon
+            ? "md:min-w-[70%] lg:min-w-[65%] min-w-md-lg"
+            : "md:min-w-[100%] lg:min-w-[100%] min-w-full-md-lg"
         }`}
       >
         <div className="flex items-center justify-between mb-6">
@@ -134,6 +136,7 @@ export default function Tasks() {
           tasks={tasks}
           setOperateTask={setOperateTask}
           setShowRightCon={setShowRightCon}
+          showRightCon={showRightCon}
         />
         ;
       </div>
