@@ -137,6 +137,7 @@ export default function Tasks() {
           setOperateTask={setOperateTask}
           setShowRightCon={setShowRightCon}
           showRightCon={showRightCon}
+          operateTask={operateTask}
         />
         ;
       </div>

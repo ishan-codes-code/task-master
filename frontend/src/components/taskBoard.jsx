@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { formatDistanceToNowStrict, differenceInDays } from "date-fns";
 
-const TaskCard = ({ task, setOperateTask, setShowRightCon }) => {
+const TaskCard = ({ task, setOperateTask, setShowRightCon, operateTask }) => {
   const daysLeft = differenceInDays(new Date(task.dueDate), new Date());
 
   const dueColor = classNames("text-black px-2 py-1 rounded text-xs", {
@@ -13,7 +13,9 @@ const TaskCard = ({ task, setOperateTask, setShowRightCon }) => {
   return (
     <button
       type="button"
-      className="bg-white rounded-2xl p-3 border w-full flex flex-col items-start gap-1"
+      className={`bg-white rounded-2xl p-3 border w-full flex flex-col items-start gap-1 transition-all duration-300 ${
+        operateTask?._id === task._id && "border-blue-500"
+      }`}
       onClick={() => {
         setOperateTask(task);
         setShowRightCon(2);
@@ -44,6 +46,7 @@ const TaskGroup = ({
   filteredTasks,
   setOperateTask,
   setShowRightCon,
+  operateTask,
 }) => {
   let height;
   if (filteredTasks.length < 1) return;
@@ -67,6 +70,7 @@ const TaskGroup = ({
             task={task}
             setOperateTask={setOperateTask}
             setShowRightCon={setShowRightCon}
+            operateTask={operateTask}
           />
         ))}
       </div>
@@ -74,7 +78,13 @@ const TaskGroup = ({
   );
 };
 
-function TaskBoard({ tasks, setOperateTask, setShowRightCon, showRightCon }) {
+function TaskBoard({
+  tasks,
+  setOperateTask,
+  setShowRightCon,
+  showRightCon,
+  operateTask,
+}) {
   if (!Array.isArray(tasks)) {
     return <div>Loading tasks...</div>; // or null
   }
@@ -103,18 +113,21 @@ function TaskBoard({ tasks, setOperateTask, setShowRightCon, showRightCon }) {
         filteredTasks={dueSoon}
         setOperateTask={setOperateTask}
         setShowRightCon={setShowRightCon}
+        operateTask={operateTask}
       />
       <TaskGroup
         label="Next"
         filteredTasks={next}
         setOperateTask={setOperateTask}
         setShowRightCon={setShowRightCon}
+        operateTask={operateTask}
       />
       <TaskGroup
         label="Later"
         filteredTasks={later}
         setOperateTask={setOperateTask}
         setShowRightCon={setShowRightCon}
+        operateTask={operateTask}
       />
     </div>
   );
