@@ -82,7 +82,7 @@ body {
 }
 
 .fade-enter {
-  animation: fade 0.5s normal forwards ease-in-out;
+  animation: fade 0.3s normal forwards ease-in-out;
 }
 .fade-exit {
   animation: fade-out 0.3 normal forwards ease-in-out;

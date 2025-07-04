@@ -13,9 +13,10 @@ import { useMyContext } from "../context/Context";
 import { formatDateWithLabels } from "../functions/operateDates";
 import TaskModal from "./taskModal";
 import TaskOverview from "./taskOverview";
+import TaskBoard from "./taskBoard";
 
 export default function Dashboard() {
-  const { isMobile, tasksData, setTasksData } = useMyContext();
+  const { isMobile, tasksData, setTasksData, tasks } = useMyContext();
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
   const [operateTask, setOperateTask] = useState([]);
@@ -93,51 +94,14 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div>
-          <div className="flex justify-between items-center my-4">
-            <h3 className="text-md font-semibold text-gray-500">My Tasks</h3>
-            <button
-              onClick={() => setShowModal(true)}
-              className="bg-purple-600 text-white px-3 py-2 rounded-md hover:bg-purple-100 hover:text-purple-700 transition"
-            >
-              <FaPlus />
-            </button>
-          </div>
-
-          {showTaskCon && (
-            <ShowTask
-              setOperateTask={setOperateTask}
-              setShowRightCon={setShowRightCon}
-              hasMore={hasMore}
-              setHasMore={setHasMore}
-              setPage={setPage}
-              page={page}
-            />
-          )}
-          {!showTaskCon && (
-            <div className="w-full flex flex-col items-center gap-2">
-              <p>
-                No <span className="text-red-700">incomplete</span> task found{" "}
-              </p>
-              <button
-                onClick={() => {
-                  setShowModal(true);
-                  setEditTask({
-                    isEditing: false,
-                    data: {},
-                  });
-                }}
-                className={
-                  showTaskCon
-                    ? "hidden"
-                    : "bg-green-600 text-white px-3 py-2 rounded-md hover:bg-green-100 hover:text-green-700 transition w-full max-w-sm"
-                }
-              >
-                Start Working
-              </button>
-            </div>
-          )}
-        </div>
+        <TaskBoard
+          tasks={tasks}
+          setOperateTask={setOperateTask}
+          setShowRightCon={setShowRightCon}
+          showRightCon={showRightCon}
+          operateTask={operateTask}
+          onlyDueSoon={true}
+        />
       </div>
       <div
         className={

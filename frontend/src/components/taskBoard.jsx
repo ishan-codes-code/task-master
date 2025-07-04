@@ -1,5 +1,7 @@
+import { useState, useEffect } from "react";
 import classNames from "classnames";
 import { formatDistanceToNowStrict, differenceInDays } from "date-fns";
+import CustomSelect from "./customSelect";
 
 const TaskCard = ({ task, setOperateTask, setShowRightCon, operateTask }) => {
   const daysLeft = differenceInDays(new Date(task.dueDate), new Date());
@@ -13,6 +15,7 @@ const TaskCard = ({ task, setOperateTask, setShowRightCon, operateTask }) => {
   return (
     <button
       type="button"
+      title="Click for more..."
       className={`bg-white rounded-2xl p-3 border w-full flex flex-col items-start gap-1 transition-all duration-300 ${
         operateTask?._id === task._id && "border-blue-500"
       }`}
@@ -49,22 +52,53 @@ const TaskGroup = ({
   operateTask,
 }) => {
   let height;
+
   if (filteredTasks.length < 1) return;
   if (filteredTasks.length < 4) {
     height = "auto";
   } else if (filteredTasks.length > 4) {
     height = "400px";
   }
+  const [sortedTasks, setSortedTasks] = useState(filteredTasks);
+
+  useEffect(() => {
+    setSortedTasks(filteredTasks);
+  }, [filteredTasks]);
+
+  const sortFunctions = [
+    () => {
+      setSortedTasks((prev) =>
+        [...prev].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      ); // Newest first
+    },
+    () => {
+      setSortedTasks((prev) =>
+        [...prev].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+      ); // Oldest first
+    },
+    () => {
+      setSortedTasks((prev) =>
+        [...prev].sort((a, b) => a.title.localeCompare(b.title))
+      ); // A-Z by title
+    },
+  ];
 
   return (
     <div className="space-y-4 p-2 ">
-      <h2 className="text-xl font-bold text-gray-800">{label}</h2>
+      <div className="flex justify-between">
+        <h2 className="text-xl font-bold text-gray-800">{label}</h2>
+        <CustomSelect
+          options={["Sort: Newest", "Oldest", "A-Z"]}
+          sortFunctions={sortFunctions}
+        />
+      </div>
+
       <div
         className={`space-y-3 h-[${height}] overflow-y-auto ${
           height === "400px" ? "pr-4" : ""
         }`}
       >
-        {filteredTasks.map((task) => (
+        {sortedTasks.map((task) => (
           <TaskCard
             key={task._id}
             task={task}
@@ -84,6 +118,7 @@ function TaskBoard({
   setShowRightCon,
   showRightCon,
   operateTask,
+  onlyDueSoon,
 }) {
   if (!Array.isArray(tasks)) {
     return <div>Loading tasks...</div>; // or null
@@ -101,6 +136,19 @@ function TaskBoard({
     else if (daysLeft <= 7) next.push(task);
     else later.push(task);
   });
+  if (onlyDueSoon) {
+    return (
+      <div>
+        <TaskGroup
+          label="Due Soon"
+          filteredTasks={dueSoon}
+          setOperateTask={setOperateTask}
+          setShowRightCon={setShowRightCon}
+          operateTask={operateTask}
+        />
+      </div>
+    );
+  }
 
   return (
     <div

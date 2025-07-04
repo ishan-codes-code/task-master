@@ -11,6 +11,7 @@ import { MdDelete, MdModeEdit } from "react-icons/md";
 import TaskOverview from "./taskOverview";
 import TaskModal from "./taskModal";
 import TaskBoard from "./taskBoard";
+import { PlusCircle } from "lucide-react";
 
 export default function Tasks() {
   const { isMobile, tasksData, setTasksData, tasks } = useMyContext();
@@ -109,36 +110,30 @@ export default function Tasks() {
             sort={sort}
           />
         )} */}
-        {/* {!showTaskCon && (
-          <div className="w-full flex flex-col items-center gap-2">
-            <p>
-              No <span className="text-red-700">incomplete</span> task found{" "}
+        {tasks.length > 0 ? (
+          <TaskBoard
+            tasks={tasks}
+            setOperateTask={setOperateTask}
+            setShowRightCon={setShowRightCon}
+            showRightCon={showRightCon}
+            operateTask={operateTask}
+          />
+        ) : (
+          <div className="flex flex-col items-center justify-center text-center p-8 rounded-2xl shadow-md border border-purple-200 bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50">
+            <p className="text-gray-800 text-lg font-semibold mb-4">
+              ☕ Looks like your to-do list went on a coffee break.
+              <br />
+              Want to add something?
             </p>
             <button
-              onClick={() => {
-                setShowModal(true);
-                setEditTask({
-                  isEditing: false,
-                  data: {},
-                });
-              }}
-              className={
-                showTaskCon
-                  ? "hidden"
-                  : "bg-green-600 text-white px-3 py-2 rounded-md hover:bg-green-100 hover:text-green-700 transition w-full max-w-sm"
-              }
+              className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-xl hover:from-purple-700 hover:to-pink-600 transition shadow-lg"
+              onClick={() => setShowModal(true)}
             >
-              Start Working
+              <PlusCircle size={20} />
+              Add Task
             </button>
           </div>
-        )} */}
-        <TaskBoard
-          tasks={tasks}
-          setOperateTask={setOperateTask}
-          setShowRightCon={setShowRightCon}
-          showRightCon={showRightCon}
-          operateTask={operateTask}
-        />
+        )}
         ;
       </div>
 
