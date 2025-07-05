@@ -60,6 +60,7 @@ export const updateTask = async (
         }
         return prev.map((t) => (t._id === updatedTask._id ? updatedTask : t));
       });
+    return true;
   } catch (err) {
     console.log(err);
   } finally {

@@ -23,6 +23,7 @@ import { Loader, Indicator } from "./item";
 import { updateTask, dropTask } from "../functions/operateTasks";
 import { showSuccess, showError } from "./toaster";
 import { useMyContext } from "../context/Context";
+import { set } from "react-hook-form";
 
 const TaskOverview = ({ task, setShowRightCon, setOperateTask }) => {
   const { isMobile, setTasks } = useMyContext();
@@ -30,6 +31,8 @@ const TaskOverview = ({ task, setShowRightCon, setOperateTask }) => {
   const [title, setTitle] = useState(task.title);
   const [dueDate, setDueDate] = useState(task.dueDate.split("T")[0]);
   const [loader, setLoader] = useState(false);
+  const [newDueDate, setNewDueDate] = useState("");
+  const [editNewDue, setEditNewDue] = useState(false);
   const [isEditingDueDate, setIsEditingDueDate] = useState(false);
 
   useEffect(() => {
@@ -230,8 +233,13 @@ const TaskOverview = ({ task, setShowRightCon, setOperateTask }) => {
         <div className="flex items-center justify-between mt-6">
           <button
             title={moodStyles.toggleText}
-            className={`p-2 rounded-md text-sm font-medium transition shadow whitespace-nowrap flex items-center gap-2 ${moodStyles.toggleBtn}`}
-            onClick={handleToggleComplete}
+            className={`p-2 rounded-md text-sm font-medium transition shadow whitespace-nowrap flex items-center gap-2 ${
+              moodStyles.toggleBtn
+            } ${editNewDue && "bg-yellow-200"}`}
+            onClick={() => {
+              if (task.isCompleted) setEditNewDue((prev) => !prev);
+              else handleToggleComplete();
+            }}
           >
             {task.isCompleted ? (
               <X className="w-4 h-4" />
@@ -255,6 +263,44 @@ const TaskOverview = ({ task, setShowRightCon, setOperateTask }) => {
             </span>
           </button>
         </div>
+        {editNewDue && (
+          <div className="flex flex-col gap-2 justify-center border-2 p-4 rounded-lg text-black">
+            <p>Enter new due date:</p>
+            <input
+              autoFocus
+              type="date"
+              value={newDueDate}
+              placeholder="Enter Due Date"
+              className="w-full p-4 py-2 bg-white border border-gray-200 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-200 transition rounded-xl shadow-sm"
+              onChange={(e) => {
+                setNewDueDate(e.target.value);
+              }}
+            />
+            <button
+              type="button"
+              className="px-5 py-2.5 hover:bg-blue-200 hover:text-blue-800 font-semibold rounded-lg text-white bg-blue-700 transition "
+              onClick={async () => {
+                if (isFutureDate(newDueDate) === true) {
+                  let res = await updateTask(
+                    task._id,
+                    { isCompleted: false, dueDate: newDueDate },
+                    setOperateTask,
+                    setLoader,
+                    setTasks
+                  );
+                  if (res === true) {
+                    setEditNewDue(false);
+                    setNewDueDate("");
+                  }
+                } else {
+                  showError("Select future date");
+                }
+              }}
+            >
+              Submit
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -12,6 +12,7 @@ import TaskOverview from "./taskOverview";
 import TaskModal from "./taskModal";
 import TaskBoard from "./taskBoard";
 import { PlusCircle } from "lucide-react";
+import CustomSelect from "./customSelect";
 
 export default function Tasks() {
   const { isMobile, tasksData, setTasksData, tasks } = useMyContext();
@@ -25,8 +26,7 @@ export default function Tasks() {
     isEditing: false,
     data: {},
   });
-  const [status, setStatus] = useState("all");
-  const [sort, setSort] = useState("newest");
+  const [status, setStatus] = useState("pending");
 
   useEffect(() => {
     if (hasMore === false && tasksData.tasks.length === 0) {
@@ -54,7 +54,20 @@ export default function Tasks() {
       setPage(1);
     }
   };
-
+  const sortFunctions = [
+    () => {
+      setStatus("all");
+    },
+    () => {
+      setStatus("pending");
+    },
+    () => {
+      setStatus("completed");
+    },
+    () => {
+      setStatus("expired");
+    },
+  ];
   return (
     <div className="h-screen w-full flex md:flex-row flex-col">
       <div
@@ -79,23 +92,14 @@ export default function Tasks() {
             placeholder="Search tasks..."
             className="w-full sm:w-1/3 px-4 py-2 border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-200"
           />
-          <div className="flex gap-2">
-            <select
-              className="px-3 py-2 border border-gray-200 rounded-xl shadow-sm bg-white text-sm text-gray-700"
-              onChange={(e) => setStatus(e.target.value)}
-            >
-              <option value="all">Status: All</option>
-              <option value="pending">Pending</option>
-              <option value="completed">Completed</option>
-            </select>
-            <select
-              className="px-3 py-2 border border-gray-200 rounded-xl shadow-sm bg-white text-sm text-gray-700"
-              onChange={(e) => setSort(e.target.value)}
-            >
-              <option value="newest">Sort: Newest</option>
-              <option value="deadline">Deadline</option>
-              <option value="a-z">A-Z</option>
-            </select>
+          <div className="">
+            <CustomSelect
+              options={["Status: All", "Pending", "Completed", "Expired"]}
+              className={
+                "px-3 py-2 border border-gray-200 rounded-xl shadow-sm bg-white text-sm text-gray-700 flex items-center justify-between min-w-[135px] gap-2 hover:border-purple-500 focus:outline-none"
+              }
+              sortFunctions={sortFunctions}
+            />
           </div>
         </div>
         {/* {showTaskCon && (
@@ -117,6 +121,7 @@ export default function Tasks() {
             setShowRightCon={setShowRightCon}
             showRightCon={showRightCon}
             operateTask={operateTask}
+            status={status}
           />
         ) : (
           <div className="flex flex-col items-center justify-center text-center p-8 rounded-2xl shadow-md border border-purple-200 bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50">

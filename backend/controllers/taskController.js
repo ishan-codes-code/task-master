@@ -50,11 +50,13 @@ const showTask = async (req, res) => {
 
   if (page === 0) {
     try {
-      const tasks = await taskModel.find({
-        userId: req.user._id,
-        isDeleted: false,
-        projectId: null,
-      });
+      const tasks = await taskModel
+        .find({
+          userId: req.user._id,
+          isDeleted: false,
+          projectId: null,
+        })
+        .sort({ createdAt: -1 });
       res.status(200).json({ success: true, tasks });
     } catch (error) {
       console.error("Error in showTask:", error);

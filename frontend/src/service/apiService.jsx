@@ -1,9 +1,9 @@
 import axios from "axios";
 import { refreshAccessToken } from "./authService";
+import { API_BASE_URL } from "../components/item";
 
 const api = axios.create({
-  baseURL:
-    "http://localhost:3000",
+  baseURL: API_BASE_URL,
   withCredentials: true,
 });
 
@@ -23,7 +23,7 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error),
+  (error) => Promise.reject(error)
 );
 
 // ✅ Add response interceptor ONCE
@@ -49,7 +49,7 @@ export const responseInterceptor = (setAccessToken) => {
       }
 
       return Promise.reject(error);
-    },
+    }
   );
 };
 

@@ -75,7 +75,7 @@ export default function Dashboard() {
           <div className="bg-purple-50 border border-purple-100 rounded-lg p-2  sm:p-4">
             <p className="text-sm text-purple-700">Total Tasks</p>
             <h2 className="text-xl sm:text-2xl font-bold text-purple-900">
-              {tasksData.total}
+              {tasks.length}
             </h2>
           </div>
           <div className="bg-green-50 border rounded-lg p-2  sm:p-4">

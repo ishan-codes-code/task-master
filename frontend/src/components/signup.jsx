@@ -9,6 +9,7 @@ import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useMyContext } from "../context/Context";
 import { showError, showSuccess } from "./toaster";
+import { API_BASE_URL } from "./item";
 
 function Signup() {
   const { isMobile } = useMyContext();
@@ -24,10 +25,7 @@ function Signup() {
   const onSubmit = async (data) => {
     // console.log(data);
     try {
-      const response = await axios.post(
-        "http://localhost:3000/auth/signup",
-        data,
-      );
+      const response = await axios.post(`${API_BASE_URL}/auth/signup`, data);
       console.log("Success:", response.data);
       if (response.data.success) {
         showSuccess(response.data.message, isMobile);

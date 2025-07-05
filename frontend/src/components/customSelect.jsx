@@ -5,6 +5,7 @@ const CustomSelect = ({
   options,
   placeholder = "Select an option",
   sortFunctions,
+  className,
 }) => {
   const [selected, setSelected] = useState(null);
   const [open, setOpen] = useState(false);
@@ -19,13 +20,20 @@ const CustomSelect = ({
     });
   };
   useEffect(() => {
-    setSelected(options[0]);
+    if (options[1] === "Pending") {
+      setSelected(options[1]);
+    } else {
+      setSelected(options[0]);
+    }
   }, []);
   return (
-    <div className="relative max-w-64 min-w-[150px]">
+    <div className="relative max-w-64 min-w-[120px]">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full rounded-md px-4 py-2 text-left text-gray-700 flex justify-end items-center gap-2 hover:border-purple-500 focus:outline-none"
+        className={
+          className ||
+          "w-full rounded-md text-left text-gray-700 flex justify-end items-center gap-2 hover:border-purple-500 focus:outline-none"
+        }
       >
         {selected || <span className="text-gray-400">{placeholder}</span>}
         <ChevronDown

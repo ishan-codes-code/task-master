@@ -1,18 +1,19 @@
 import axios from "axios";
+import { API_BASE_URL } from "../components/item";
 
 export const refreshAccessToken = async (setAccessToken) => {
   try {
     // console.log("Current cookies:", document.cookie);
 
     const response = await axios.post(
-      "http://localhost:3000/auth/refresh",
+      `${API_BASE_URL}/auth/refresh`,
       {}, // 🔥 Empty object for request body
       {
         withCredentials: true, // ✅ Fixed Typo
         headers: {
           "Content-Type": "application/json", // ✅ Ensures correct request type
         },
-      },
+      }
     );
 
     setAccessToken(response.data.accessToken);
@@ -20,7 +21,7 @@ export const refreshAccessToken = async (setAccessToken) => {
   } catch (error) {
     console.log(
       "Error in refreshAccessToken:",
-      error.response?.data || error.message,
+      error.response?.data || error.message
     );
     return null;
   }

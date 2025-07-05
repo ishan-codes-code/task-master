@@ -15,10 +15,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin:
-      "http://localhost:5173",
+    origin: (origin, callback) => {
+      callback(null, true); // allow all for dev
+    },
     credentials: true,
-  }),
+  })
 );
 app.use(cookieParser());
 app.use("/auth", authRouter);
@@ -28,6 +29,6 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-app.listen(port, () => {
+app.listen(port, "0.0.0.0", () => {
   console.log(`Example app listening on port ${port}`);
 });

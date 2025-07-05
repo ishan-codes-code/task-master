@@ -9,6 +9,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useMyContext } from "../context/Context";
 import { showError, showSuccess } from "./toaster";
 import { attachToken, responseInterceptor } from "../service/apiService";
+import { API_BASE_URL } from "./item";
 
 function Login() {
   const navigate = useNavigate();
@@ -28,11 +29,9 @@ function Login() {
   const onSubmit = async (data) => {
     // console.log(data);
     try {
-      const response = await axios.post(
-        "http://localhost:3000/auth/login",
-        data,
-        { withCredentials: true },
-      );
+      const response = await axios.post(`${API_BASE_URL}/auth/login`, data, {
+        withCredentials: true,
+      });
       if (response.data.success) {
         showSuccess(response.data.message, isMobile);
         // console.log("Success:", response.data);
