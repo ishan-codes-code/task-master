@@ -117,7 +117,7 @@ const TaskOverview = ({ task, setShowRightCon, setOperateTask }) => {
             className="h-fit flex items-center gap-1 text-sm px-3 py-2 rounded-lg bg-green-600 text-white hover:bg-green-100 hover:text-green-700 transition"
             onClick={handleSave}
           >
-            <CircleArrowUp className="text-lg" /> Save
+            <CircleArrowUp className="w-6 h-6" /> Save
           </button>
         )}
         <CircleX

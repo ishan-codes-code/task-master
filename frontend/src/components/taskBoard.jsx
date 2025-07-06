@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import classNames from "classnames";
 import { formatDistanceToNowStrict, differenceInDays, format } from "date-fns";
 import CustomSelect from "./customSelect";
+import NothingToSee from "./nothingToSee";
 
 const TaskCard = ({ task, setOperateTask, setShowRightCon, operateTask }) => {
   const msLeft = new Date(task.dueDate) - new Date();
@@ -239,25 +240,32 @@ function TaskBoard({
           />
         </>
       )}
-      {status === "completed" && (
-        <TaskGroup
-          label="Completed"
-          filteredTasks={completed}
-          setOperateTask={setOperateTask}
-          setShowRightCon={setShowRightCon}
-          operateTask={operateTask}
-        />
-      )}
+      {status === "completed" &&
+        (completed.length > 0 ? (
+          <TaskGroup
+            label="Completed"
+            filteredTasks={completed}
+            setOperateTask={setOperateTask}
+            setShowRightCon={setShowRightCon}
+            operateTask={operateTask}
+          />
+        ) : (
+          <NothingToSee />
+        ))}
 
-      {status === "expired" && (
-        <TaskGroup
-          label="Overdue"
-          filteredTasks={overDue}
-          setOperateTask={setOperateTask}
-          setShowRightCon={setShowRightCon}
-          operateTask={operateTask}
-        />
-      )}
+      {status === "expired" ? (
+        overDue.length > 0 ? (
+          <TaskGroup
+            label="Overdue"
+            filteredTasks={overDue}
+            setOperateTask={setOperateTask}
+            setShowRightCon={setShowRightCon}
+            operateTask={operateTask}
+          />
+        ) : (
+          <NothingToSee />
+        )
+      ) : null}
     </div>
   );
 }

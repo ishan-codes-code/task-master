@@ -688,6 +688,10 @@ video {
   height: 0.5rem;
 }
 
+.h-28 {
+  height: 7rem;
+}
+
 .h-3 {
   height: 0.75rem;
 }
@@ -710,6 +714,10 @@ video {
 
 .h-8 {
   height: 2rem;
+}
+
+.h-96 {
+  height: 24rem;
 }
 
 .h-\[100\%\] {
@@ -779,6 +787,10 @@ video {
 
 .min-h-screen {
   min-height: 100vh;
+}
+
+.w-28 {
+  width: 7rem;
 }
 
 .w-3 {
@@ -868,6 +880,10 @@ video {
 
 .max-w-xl {
   max-width: 36rem;
+}
+
+.max-w-xs {
+  max-width: 20rem;
 }
 
 .flex-1 {
@@ -1099,6 +1115,10 @@ video {
 
 .rounded-2xl {
   border-radius: 1rem;
+}
+
+.rounded-3xl {
+  border-radius: 1.5rem;
 }
 
 .rounded-\[8px\] {
@@ -1392,6 +1412,10 @@ video {
 .bg-yellow-50 {
   --tw-bg-opacity: 1;
   background-color: rgb(254 252 232 / var(--tw-bg-opacity, 1));
+}
+
+.bg-\[linear-gradient\(to_right\2c _\#FFFFFF\2c _\#f5f3ff\2c _\#FFFFFF\)\] {
+  background-image: linear-gradient(to right, #FFFFFF, #f5f3ff, #FFFFFF);
 }
 
 .bg-gradient-to-br {
@@ -1781,6 +1805,10 @@ video {
   opacity: 0.75;
 }
 
+.opacity-80 {
+  opacity: 0.8;
+}
+
 .shadow {
   --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   --tw-shadow-colored: 0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);
@@ -1880,6 +1908,11 @@ video {
 .focus-within\:border-purple-600:focus-within {
   --tw-border-opacity: 1;
   border-color: rgb(147 51 234 / var(--tw-border-opacity, 1));
+}
+
+.hover\:border-purple-300:hover {
+  --tw-border-opacity: 1;
+  border-color: rgb(216 180 254 / var(--tw-border-opacity, 1));
 }
 
 .hover\:border-purple-500:hover {
@@ -2074,6 +2107,12 @@ video {
   --tw-ring-color: rgb(233 213 255 / var(--tw-ring-opacity, 1));
 }
 
+.active\:scale-95:active {
+  --tw-scale-x: .95;
+  --tw-scale-y: .95;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
 .active\:bg-\[\#003399\]:active {
   --tw-bg-opacity: 1;
   background-color: rgb(0 51 153 / var(--tw-bg-opacity, 1));
@@ -2101,6 +2140,11 @@ video {
 
 .disabled\:opacity-50:disabled {
   opacity: 0.5;
+}
+
+.group:hover .group-hover\:rotate-90 {
+  --tw-rotate: 90deg;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
 @media (min-width: 640px) {

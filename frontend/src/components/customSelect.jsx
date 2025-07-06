@@ -24,6 +24,7 @@ const CustomSelect = ({
       setSelected(options[1]);
     } else {
       setSelected(options[0]);
+      sortFunctions[0]();
     }
   }, []);
   return (

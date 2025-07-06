@@ -2,10 +2,11 @@ import { Outlet, useLocation } from "react-router-dom";
 import { Navbar2, Sidebar, MobileNavbar } from "../components/navbar";
 import { useState, useEffect } from "react";
 import { fetchAllTasks } from "../functions/operateTasks";
+import { fetchAllProjects } from "../functions/operateProject";
 import { useMyContext } from "../context/Context";
 
 export default function WorkSpace() {
-  const { setTasks } = useMyContext();
+  const { setTasks, setProjects, setPTasks } = useMyContext();
 
   const [showNav, setShowNav] = useState(true);
   const location = useLocation();
@@ -23,7 +24,8 @@ export default function WorkSpace() {
   }, [location.pathname]);
 
   useEffect(() => {
-    fetchAllTasks(setTasks);
+    fetchAllTasks(setTasks, setPTasks);
+    fetchAllProjects(setProjects);
   }, []);
 
   return (

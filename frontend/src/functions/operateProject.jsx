@@ -5,7 +5,7 @@ export const fetchProject = async (
   pageNum,
   setProjects,
   setHasMore,
-  setLoader,
+  setLoader
 ) => {
   if (setLoader) setLoader(true);
   try {
@@ -37,12 +37,29 @@ export const fetchProject = async (
   }
 };
 
-export const updateProject = async (id, data, setProject, setLoader) => {
+export const fetchAllProjects = async (setProjects) => {
+  try {
+    const response = await api.get("project/show");
+    if (setProjects) {
+      setProjects(response.data.projects);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const updateProject = async (id, data, setProjects, setLoader) => {
   if (setLoader) setLoader(true);
   try {
     // console.log(data);
     const response = await api.put(`/project/update/${id}`, data);
-    setProject(response.data.updatedProject);
+    const updatedProject = response.data.updatedProject;
+    if (setProjects)
+      setProjects((prev) => {
+        return prev.map((p) =>
+          p._id === updatedProject._id ? updatedProject : p
+        );
+      });
   } catch (error) {
     console.log("Failed:", error);
   } finally {
@@ -56,7 +73,7 @@ export const deleteProject = async (
   showSuccess,
   showError,
   setProjectsData,
-  navigate,
+  navigate
 ) => {
   if (setLoader) setLoader(true);
   try {

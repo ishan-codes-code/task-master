@@ -57,7 +57,15 @@ const showTask = async (req, res) => {
           projectId: null,
         })
         .sort({ createdAt: -1 });
-      res.status(200).json({ success: true, tasks });
+      const pTasks = await taskModel
+        .find({
+          userId: req.user._id,
+          isDeleted: false,
+          projectId: { $ne: null },
+        })
+        .sort({ createdAt: -1 });
+
+      res.status(200).json({ success: true, tasks, pTasks });
     } catch (error) {
       console.error("Error in showTask:", error);
       res.status(500).json({

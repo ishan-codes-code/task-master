@@ -7,25 +7,12 @@ import { fetchProject } from "../functions/operateProject";
 import { formatDateWithLabels } from "../functions/operateDates";
 import { FaEllipsis } from "react-icons/fa6";
 import { NavLink } from "react-router-dom";
+import { Plus, CalendarDays, MoreHorizontal } from "lucide-react";
 
 export default function Project() {
-  const { projectsData, setProjectsData } = useMyContext();
+  const { projectsData, setProjectsData, projects } = useMyContext();
   const [showModal, setShowModal] = useState(false);
   const [loader, setLoader] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const [page, setPage] = useState(1);
-
-  useEffect(() => {
-    if (page != 1) {
-      fetchProject(page, setProjectsData, setHasMore, setLoader);
-    }
-  }, [page]);
-  useEffect(() => {
-    if (!showModal) {
-      setPage(1);
-      fetchProject(page, setProjectsData, setHasMore, setLoader);
-    }
-  }, [showModal]);
 
   return (
     <div className="h-full w-full flex md:flex-row flex-col">
@@ -35,10 +22,11 @@ export default function Project() {
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-gray-800">Projects</h1>
           <button
-            className="bg-purple-600 text-white px-4 py-2 rounded-xl hover:bg-purple-700 shadow-sm flex items-center gap-2"
             onClick={() => setShowModal(true)}
+            className="group bg-purple-600 text-white rounded-xl px-4 py-2 hover:bg-purple-700 active:scale-95 transition flex items-center gap-1"
           >
-            <FaPlus /> <p>New Project</p>
+            <Plus className="transform transition-transform duration-300 group-hover:rotate-90 " />
+            New Project
           </button>
         </div>
 
@@ -64,15 +52,15 @@ export default function Project() {
         </div>
         {/* Project List */}
         <div className="flex flex-col gap-4">
-          {projectsData.projects.map((project) => (
+          {projects.map((project) => (
             <NavLink to={`/project/${project._id}`}>
               <div
                 key={project._id}
-                className="bg-white border border-gray-200 rounded-2xl shadow-sm p-3 flex flex-col gap-3 hover:shadow-md transition"
+                className="rounded-2xl border border-gray-200 bg-[linear-gradient(to_right,_#FFFFFF,_#f5f3ff,_#FFFFFF)] p-4 shadow-sm hover:shadow-md hover:border-purple-300 transition flex flex-col gap-2 "
               >
                 {/* <!-- Title + Menu --> */}
                 <div className="flex justify-between items-start">
-                  <h2 className="text-lg font-semibold text-gray-800">
+                  <h2 className="text-lg sm:xl font-bold text-gray-800">
                     {project.title}
                   </h2>
                   <button className="text-gray-400 hover:text-gray-600">
@@ -81,13 +69,15 @@ export default function Project() {
                 </div>
 
                 {/* <!-- Description --> */}
-                <p className="text-sm text-gray-500">{project.desc}</p>
+                <p className="text-sm font-semibold text-gray-500">
+                  {project.desc}
+                </p>
 
                 {/* <!-- Progress bar --> */}
                 <div className="flex items-center gap-2">
-                  <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
                     <div
-                      className="bg-purple-600 h-full rounded-full"
+                      className="bg-purple-500 h-full rounded-full transition-all duration-300"
                       style={{ width: `${project.percentageCompleted}%` }}
                     ></div>
                   </div>
@@ -115,7 +105,8 @@ export default function Project() {
                 </div> */}
 
                   {/* <!-- Due Date --> */}
-                  <div>
+                  <div className="flex items-center gap-1">
+                    <CalendarDays className="w-4 h-4 text-gray-400 " />
                     <span className="text-xs">
                       Due:{" "}
                       <span className="font-medium text-gray-700">
@@ -128,20 +119,6 @@ export default function Project() {
               </div>
             </NavLink>
           ))}
-          {hasMore && (
-            <button
-              type="button"
-              className="bg-transparent text-blue-500 hover:text-blue-700 font-semibold text-center mx-auto"
-              onClick={() => setPage(page + 1)}
-            >
-              Load More
-            </button>
-          )}
-          {!hasMore && (
-            <p className="text-sm text-gray-400 font-bold text-center">
-              No more Projects to load
-            </p>
-          )}
         </div>
         <ProjectModal
           isOpen={showModal}

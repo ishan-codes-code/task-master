@@ -14,12 +14,20 @@ import TaskModal from "./taskModal";
 
 export default function ProjectDetails() {
   const { id } = useParams();
-  const { projectsData, setProjectsData, isMobile } = useMyContext();
+  const {
+    projectsData,
+    setProjectsData,
+    projects,
+    setProjects,
+    isMobile,
+    pTasks,
+    setPTasks,
+  } = useMyContext();
   const navigate = useNavigate();
 
   const [project, setProject] = useState([]);
 
-  const [pTasks, setPtasks] = useState([]);
+  const [currentPTasks, setCurrentPtasks] = useState([]);
   const [loader, setLoader] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [moreOpt, setMoreOpt] = useState(false);
@@ -31,9 +39,9 @@ export default function ProjectDetails() {
   const [isEditingDueDate, setIsEditingDueDate] = useState(false);
 
   useEffect(() => {
-    const foundProject = projectsData?.projects?.find((p) => p._id === id);
+    const foundProject = projects?.find((p) => p._id === id);
     setProject(foundProject);
-  }, [id, projectsData]);
+  }, [projects, id]);
 
   useEffect(() => {
     if (project) {
@@ -44,29 +52,27 @@ export default function ProjectDetails() {
   }, [project]);
 
   useEffect(() => {
-    loadPTasks(id);
-  }, [project]);
+    const foundPTasks = pTasks?.filter((t) => t.projectId === id);
+    setCurrentPtasks(foundPTasks);
+  }, [pTasks, id]);
 
-  async function loadPTasks(pId) {
-    try {
-      const response = await api.get(`/project/showPTasks?id=${pId}`);
-      setPtasks(response.data.tasks);
-    } catch (err) {
-      console.log(err);
-    }
-  }
+  useEffect(() => {
+    const completed = currentPTasks.filter((t) => t.isCompleted).length;
+    setPercentageCompleted((completed / currentPTasks.length) * 100 || 0);
+  }, [currentPTasks]);
 
   const toggleTask = async (taskId) => {
     if (project.status !== "inProgress") {
       showError("You can't edit tasks until the project is started.");
       return;
     }
-    const task = pTasks.find((t) => t._id === taskId);
-    const updatedTasks = pTasks.map((t) =>
-      t._id === taskId ? { ...t, isCompleted: !t.isCompleted } : t,
+    const task = currentPTasks.find((t) => t._id === taskId);
+
+    const updatedTasks = currentPTasks.map((t) =>
+      t._id === taskId ? { ...t, isCompleted: !t.isCompleted } : t
     );
     const updatedCompletedCount = updatedTasks.filter(
-      (t) => t.isCompleted,
+      (t) => t.isCompleted
     ).length;
     const updatedPercentage =
       (updatedCompletedCount / updatedTasks.length) * 100;
@@ -76,7 +82,10 @@ export default function ProjectDetails() {
     setLoader(true);
     try {
       const response = await api.put(`/task/update/${taskId}`, data);
-      setPtasks(updatedTasks);
+      const updatedTask = response.data.updatedTask;
+      setPTasks((prev) => {
+        return prev.map((t) => (t._id === updatedTask._id ? updatedTask : t));
+      });
       showSuccess(response.data.message, isMobile);
 
       updateProject(
@@ -84,7 +93,7 @@ export default function ProjectDetails() {
         {
           percentageCompleted: updatedPercentage,
         },
-        setProject,
+        setProjects
       );
     } catch (error) {
       console.log("Failed:", error);
@@ -94,12 +103,7 @@ export default function ProjectDetails() {
     }
   };
 
-  useEffect(() => {
-    const completed = pTasks.filter((t) => t.isCompleted).length;
-    setPercentageCompleted((completed / pTasks.length) * 100 || 0);
-  }, [pTasks]);
-
-  const completedCount = pTasks.filter((t) => t.isCompleted).length;
+  const completedCount = currentPTasks.filter((t) => t.isCompleted).length;
 
   const handleSave = () => {
     const updates = {};
@@ -113,7 +117,7 @@ export default function ProjectDetails() {
       updates.dueDate = dueDate;
     }
     if (Object.keys(updates).length > 0) {
-      updateProject(project._id, updates, setProject, setLoader);
+      updateProject(project._id, updates, setProjects, setLoader);
     }
   };
 
@@ -190,8 +194,8 @@ export default function ProjectDetails() {
                     {
                       status: "inProgress",
                     },
-                    setProject,
-                    setLoader,
+                    setProjects,
+                    setLoader
                   );
                 }}
               >
@@ -208,8 +212,8 @@ export default function ProjectDetails() {
                     {
                       status: "onHold",
                     },
-                    setProject,
-                    setLoader,
+                    setProjects,
+                    setLoader
                   );
                 }}
               >
@@ -238,7 +242,7 @@ export default function ProjectDetails() {
                           showSuccess,
                           showError,
                           setProjectsData,
-                          navigate,
+                          navigate
                         )
                       }
                       className="hover:text-red-700 p-2 hover:bg-red-100 w-full transition"
@@ -282,7 +286,7 @@ export default function ProjectDetails() {
               onClick={() => {
                 if (project.status !== "inProgress") {
                   showError(
-                    "You can't add tasks until the project is started.",
+                    "You can't add tasks until the project is started."
                   );
                   return;
                 }
@@ -294,28 +298,28 @@ export default function ProjectDetails() {
           </div>
 
           <ul className="space-y-3">
-            {pTasks.map((task) => (
+            {currentPTasks.map((task) => (
               <li
                 key={task._id}
                 className="flex items-center justify-between bg-gray-50 hover:bg-gray-100 rounded-lg p-3 cursor-pointer transition"
                 onClick={() => toggleTask(task._id)}
               >
-                <div className="flex items-start gap-2">
+                <div className="flex items-center gap-2">
                   <input
                     type="checkbox"
                     checked={task.isCompleted}
                     onChange={() => toggleTask(task._id)}
                   />
-                  <div className="flex flex-col items-start gap-2">
-                    <span
-                      className={`text-md ${task.isCompleted ? "line-through text-gray-400" : "text-gray-700"}`}
-                    >
-                      {task.title}
-                    </span>
-                    {task.desc != null && (
-                      <p className="text-sm text-gray-500">{task.desc}</p>
-                    )}
-                  </div>
+
+                  <span
+                    className={`text-md ${
+                      task.isCompleted
+                        ? "line-through text-gray-400"
+                        : "text-gray-700"
+                    }`}
+                  >
+                    {task.title}
+                  </span>
                 </div>
                 {task.isCompleted && (
                   <FaCheckCircle className="w-4 h-4 text-green-500" />
@@ -333,7 +337,7 @@ export default function ProjectDetails() {
               ></div>
             </div>
             <p className="text-xs text-gray-500 mt-1">
-              {completedCount} of {pTasks.length} tasks completed
+              {completedCount} of {currentPTasks.length} tasks completed
             </p>
           </div>
         </div>

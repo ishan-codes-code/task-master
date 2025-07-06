@@ -17,6 +17,8 @@ export const ContextProvider = ({ children }) => {
     completed: 0,
   });
   const [tasks, setTasks] = useState([]);
+  const [pTasks, setPTasks] = useState([]);
+  const [projects, setProjects] = useState([]);
   const [showSidebar, setShowSidebar] = useState(false);
 
   useEffect(() => {
@@ -53,6 +55,10 @@ export const ContextProvider = ({ children }) => {
         setProjectsData,
         tasks,
         setTasks,
+        projects,
+        setProjects,
+        pTasks,
+        setPTasks,
       }}
     >
       {children}

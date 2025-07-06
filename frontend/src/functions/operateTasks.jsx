@@ -28,12 +28,15 @@ export const fetchTask = async (pageNum, setTasks, setHasMore, setLoading) => {
   }
 };
 
-export const fetchAllTasks = async (setTasks) => {
+export const fetchAllTasks = async (setTasks, setPTasks) => {
   try {
     const response = await api.get("task/show");
     if (setTasks) {
       const raw = response.data.tasks;
       setTasks(Array.isArray(raw) ? raw : [raw]);
+    }
+    if (setPTasks) {
+      setPTasks(response.data.pTasks);
     }
   } catch (error) {
     console.log(error);
