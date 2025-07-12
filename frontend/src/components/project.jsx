@@ -1,13 +1,117 @@
 import { useEffect, useState } from "react";
 import ProjectModal from "./projectModal";
 import { FaPlus } from "react-icons/fa6";
-import { Loader } from "./item";
+import { Loader, Indicator } from "./item";
 import { useMyContext } from "../context/Context";
 import { fetchProject } from "../functions/operateProject";
 import { formatDateWithLabels } from "../functions/operateDates";
 import { FaEllipsis } from "react-icons/fa6";
 import { NavLink } from "react-router-dom";
 import { Plus, CalendarDays, MoreHorizontal } from "lucide-react";
+import classNames from "classnames";
+
+function ProjectCard({ project }) {
+  const msLeft = new Date(project.dueDate) - new Date();
+
+  const secLeft = Math.floor(msLeft / 1000);
+  const minLeft = Math.floor(msLeft / (1000 * 60));
+  const hrsLeft = Math.floor(msLeft / (1000 * 60 * 60));
+  const daysLeft = Math.floor(msLeft / (1000 * 60 * 60 * 24));
+
+  const dueColor = classNames("text-black px-2 py-1 rounded text-xs", {
+    "bg-red-500 text-white": daysLeft <= 3,
+    "bg-yellow-400": daysLeft > 3 && daysLeft <= 7,
+    "bg-green-500": daysLeft > 7,
+  });
+
+  const dueText =
+    (daysLeft >= 1 && `${daysLeft} days`) ||
+    (hrsLeft >= 1 && `${hrsLeft} hours`) ||
+    (minLeft >= 1 && `${minLeft} minutes`) ||
+    (secLeft >= 1 && `${secLeft} seconds`) ||
+    "expired";
+
+  const borderClr =
+    (project.status === "notStarted" && "gray-400") ||
+    (project.status === "inProgress" && "green-500") ||
+    (project.status === "onHold" && "yellow-400") ||
+    (project.status === "stuck" && "red-500") ||
+    (project.status === "completed" && "green-600") ||
+    (project.status === "cancelled" && "gray-500") ||
+    "black";
+
+  return (
+    <NavLink to={`/project/${project._id}`}>
+      <div
+        key={project._id}
+        className={`rounded-2xl border border-${borderClr} bg-[linear-gradient(to_right,_#FFFFFF,_#f5f3ff,_#FFFFFF)] p-4 shadow-sm hover:shadow-md hover:border-purple-300 transition flex flex-col gap-2 `}
+      >
+        {/* <!-- Title + Menu --> */}
+        <div className="flex justify-between items-start">
+          <h2 className="text-lg sm:xl font-bold text-gray-800">
+            {project.title}
+          </h2>
+          <button className="text-gray-400 hover:text-gray-600">
+            <FaEllipsis />
+          </button>
+        </div>
+
+        {/* <!-- Description --> */}
+        <p className="text-sm font-semibold text-gray-500">{project.desc}</p>
+
+        {/* <!-- Progress bar --> */}
+        <div className="flex items-center gap-2">
+          <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+            <div
+              className="bg-purple-500 h-full rounded-full transition-all duration-300"
+              style={{ width: `${project.percentageCompleted}%` }}
+            ></div>
+          </div>
+          <span className="text-xs text-gray-500">
+            {project.percentageCompleted}%
+          </span>
+        </div>
+
+        {/* <!-- Footer --> */}
+        <div className="flex sm:justify-between sm:items-center sm:flex-row flex-col gap-2 text-sm text-gray-500">
+          {/* <!-- Avatars --> */}
+          {/* <div className="flex -space-x-2">
+                  <img
+                    src="https://i.pravatar.cc/32?img=1"
+                    className="w-6 h-6 rounded-full border-2 border-white"
+                  />
+                  <img
+                    src="https://i.pravatar.cc/32?img=4"
+                    className="w-6 h-6 rounded-full border-2 border-white"
+                  />
+                  <img
+                    src="https://i.pravatar.cc/32?img=3"
+                    className="w-6 h-6 rounded-full border-2 border-white"
+                  />
+                </div> */}
+
+          <div className="flex justify-between items-center gap-2">
+            <span className={dueColor}>Due in {dueText} </span>
+            <span
+              className={`flex items-center gap-2 border border-${borderClr}  px-2 py-1 rounded-lg`}
+            >
+              <Indicator status={project.status} />
+            </span>
+          </div>
+          <div className="self-center sm:self-auto flex items-center gap-1">
+            <CalendarDays className="w-4 h-4 text-gray-400 " />
+            <span className="text-xs">
+              Created at:{" "}
+              <span className="font-medium text-gray-700">
+                {formatDateWithLabels(new Date(project.createdAt))}
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </NavLink>
+  );
+}
 
 export default function Project() {
   const { projectsData, setProjectsData, projects } = useMyContext();
@@ -53,71 +157,7 @@ export default function Project() {
         {/* Project List */}
         <div className="flex flex-col gap-4">
           {projects.map((project) => (
-            <NavLink to={`/project/${project._id}`}>
-              <div
-                key={project._id}
-                className="rounded-2xl border border-gray-200 bg-[linear-gradient(to_right,_#FFFFFF,_#f5f3ff,_#FFFFFF)] p-4 shadow-sm hover:shadow-md hover:border-purple-300 transition flex flex-col gap-2 "
-              >
-                {/* <!-- Title + Menu --> */}
-                <div className="flex justify-between items-start">
-                  <h2 className="text-lg sm:xl font-bold text-gray-800">
-                    {project.title}
-                  </h2>
-                  <button className="text-gray-400 hover:text-gray-600">
-                    <FaEllipsis />
-                  </button>
-                </div>
-
-                {/* <!-- Description --> */}
-                <p className="text-sm font-semibold text-gray-500">
-                  {project.desc}
-                </p>
-
-                {/* <!-- Progress bar --> */}
-                <div className="flex items-center gap-2">
-                  <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                    <div
-                      className="bg-purple-500 h-full rounded-full transition-all duration-300"
-                      style={{ width: `${project.percentageCompleted}%` }}
-                    ></div>
-                  </div>
-                  <span className="text-xs text-gray-500">
-                    {project.percentageCompleted}%
-                  </span>
-                </div>
-
-                {/* <!-- Footer --> */}
-                <div className="flex justify-between items-center text-sm text-gray-500">
-                  {/* <!-- Avatars --> */}
-                  {/* <div className="flex -space-x-2">
-                  <img
-                    src="https://i.pravatar.cc/32?img=1"
-                    className="w-6 h-6 rounded-full border-2 border-white"
-                  />
-                  <img
-                    src="https://i.pravatar.cc/32?img=4"
-                    className="w-6 h-6 rounded-full border-2 border-white"
-                  />
-                  <img
-                    src="https://i.pravatar.cc/32?img=3"
-                    className="w-6 h-6 rounded-full border-2 border-white"
-                  />
-                </div> */}
-
-                  {/* <!-- Due Date --> */}
-                  <div className="flex items-center gap-1">
-                    <CalendarDays className="w-4 h-4 text-gray-400 " />
-                    <span className="text-xs">
-                      Due:{" "}
-                      <span className="font-medium text-gray-700">
-                        {" "}
-                        {formatDateWithLabels(new Date(project.dueDate))}
-                      </span>
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </NavLink>
+            <ProjectCard project={project} />
           ))}
         </div>
         <ProjectModal

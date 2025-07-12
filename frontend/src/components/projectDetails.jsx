@@ -301,7 +301,7 @@ export default function ProjectDetails() {
             {currentPTasks.map((task) => (
               <li
                 key={task._id}
-                className="flex items-center justify-between bg-gray-50 hover:bg-gray-100 rounded-lg p-3 cursor-pointer transition"
+                className="flex items-center justify-between bg-gray-50 hover:bg-gray-100 rounded-lg p-3 cursor-pointer active:scale-95 transition"
                 onClick={() => toggleTask(task._id)}
               >
                 <div className="flex items-center gap-2">
