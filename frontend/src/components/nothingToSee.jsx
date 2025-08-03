@@ -2,7 +2,7 @@ import nfImg from "../assets/nf-img.png";
 
 const NothingToSee = () => {
   return (
-    <div className="flex flex-col items-center justify-center h-96 w-full bg-white rounded-3xl border border-gray-200 shadow-md p-8 text-center animate-fade-in">
+    <div className="flex flex-col items-center justify-center h-96 w-full bg-white rounded-3xl border border-gray-200 shadow-md p-8 text-center animate-fade-in cursor-pointer active:scale-95 transition select-none">
       <img
         src={nfImg}
         alt="Nothing to see"

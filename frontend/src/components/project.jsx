@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import ProjectModal2 from "./projectModal2";
 import ProjectModal from "./projectModal";
 import { FaPlus } from "react-icons/fa6";
 import { Loader, Indicator } from "./item";
@@ -7,8 +8,9 @@ import { fetchProject } from "../functions/operateProject";
 import { formatDateWithLabels } from "../functions/operateDates";
 import { FaEllipsis } from "react-icons/fa6";
 import { NavLink } from "react-router-dom";
-import { Plus, CalendarDays, MoreHorizontal, Clock } from "lucide-react";
+import { Plus, CalendarDays, Clock } from "lucide-react";
 import classNames from "classnames";
+import NothingToSee from "./nothingToSee";
 
 function ProjectCard({ project }) {
   const msLeft = new Date(project.dueDate) - new Date();
@@ -127,7 +129,7 @@ function ProjectCard({ project }) {
 }
 
 export default function Project() {
-  const { projectsData, setProjectsData, projects } = useMyContext();
+  const { projects } = useMyContext();
   const [showModal, setShowModal] = useState(false);
   const [loader, setLoader] = useState(false);
 
@@ -169,8 +171,9 @@ export default function Project() {
         </div>
         {/* Project List */}
         <div className="flex flex-col gap-4">
+          {projects.length === 0 && <NothingToSee />}
           {projects.map((project) => (
-            <ProjectCard project={project} />
+            <ProjectCard key={project._id} project={project} />
           ))}
         </div>
         <ProjectModal
@@ -178,8 +181,14 @@ export default function Project() {
           onClose={() => {
             setShowModal(false);
           }}
-          setLoading={setLoader}
         />
+        {/* <ProjectModal2
+          isOpen={showModal}
+          onClose={() => {
+            setShowModal(false);
+          }}
+          setLoading={setLoader}
+        /> */}
       </div>
     </div>
   );

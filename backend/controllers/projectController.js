@@ -39,10 +39,10 @@ const addProject = async (req, res) => {
       const tasks = await taskModel.insertMany(
         req.body.addTasks.map((task) => ({
           title: task.title,
-         
+
           dueDate: req.body.pDueDate,
           userId: req.user._id,
-        })),
+        }))
       );
       req.body.tasks = [...req.body.tasks, ...tasks.map((task) => task)];
     } catch (err) {
@@ -50,6 +50,9 @@ const addProject = async (req, res) => {
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
+
+  let savedProject; // Declare it in the outer scope
+
   try {
     const project = new projectModel({
       title: req.body.pTitle,
@@ -58,12 +61,15 @@ const addProject = async (req, res) => {
       userId: req.user._id,
       tasks: req.body.tasks.map((task) => task._id),
     });
-    await project.save();
+
+    savedProject = await project.save(); // Now assign it here
+
     const taskIds = req.body.tasks.map((task) => task._id);
+
     try {
       await taskModel.updateMany(
         { _id: { $in: taskIds } },
-        { $set: { projectId: project._id } },
+        { $set: { projectId: project._id } }
       );
     } catch (err) {
       console.log(err);
@@ -73,7 +79,8 @@ const addProject = async (req, res) => {
     console.log(err);
     return res.status(500).json({ message: "Internal Server Error" });
   }
-  res.status(200).json({ message: "Project added" });
+
+  res.status(200).json({ message: "Project added", project: savedProject });
 };
 
 const showPTasks = async (req, res) => {
@@ -96,7 +103,7 @@ const updateProject = async (req, res) => {
       updatedData,
       {
         new: true,
-      },
+      }
     );
     if (!updatedProject) {
       return res

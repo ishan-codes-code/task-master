@@ -102,18 +102,6 @@ export default function Tasks() {
             />
           </div>
         </div>
-        {/* {showTaskCon && (
-          <ShowTask
-            setOperateTask={setOperateTask}
-            setShowRightCon={setShowRightCon}
-            hasMore={hasMore}
-            setHasMore={setHasMore}
-            setPage={setPage}
-            page={page}
-            status={status}
-            sort={sort}
-          />
-        )} */}
         {tasks.length > 0 ? (
           <TaskBoard
             tasks={tasks}

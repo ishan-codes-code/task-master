@@ -241,7 +241,7 @@ export default function ProjectDetails() {
                           setLoader,
                           showSuccess,
                           showError,
-                          setProjectsData,
+                          setProjects,
                           navigate
                         )
                       }

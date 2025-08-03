@@ -72,14 +72,14 @@ export const deleteProject = async (
   setLoader,
   showSuccess,
   showError,
-  setProjectsData,
+  setProjects,
   navigate
 ) => {
   if (setLoader) setLoader(true);
   try {
     const response = await api.post(`/project/delete`, data);
     showSuccess(response.data.message);
-    setProjectsData({ projects: [], total: 0, completed: 0 });
+    setProjects((prev) => prev.filter((p) => p._id !== data._id));
     navigate("/project");
   } catch (error) {
     showError(error.response?.data?.message || error.message);
