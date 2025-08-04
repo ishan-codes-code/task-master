@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 
 const CustomSelect = ({
@@ -30,6 +30,7 @@ const CustomSelect = ({
   return (
     <div className="relative max-w-64 min-w-[120px]">
       <button
+        type="button"
         onClick={() => setOpen(!open)}
         className={
           className ||

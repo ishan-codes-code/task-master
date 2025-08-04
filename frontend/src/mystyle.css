@@ -92,6 +92,26 @@ body {
 .animate-fadeIn {
   animation: fadeIn 0.25s ease-out;
 }
+
+.animate-shake {
+  animation: shake 0.2s ease-in-out 1;
+}
+
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
 @keyframes fadeIn {
   from {
     transform: scale(0.97);

@@ -1,37 +1,94 @@
-import { X } from "lucide-react";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { X } from "lucide-react";
+import { isFutureDate } from "../functions/operateDates";
+import { showError, showSuccess } from "./toaster";
 
-export default function ProjectModal({ isOpen, onClose, setLoader }) {
-  if (!isOpen) return;
+export default function ProjectModal({ isOpen, onClose }) {
+  if (!isOpen) return null;
 
-  const [taskCount, setTaskCount] = useState(1);
   const [tasks, setTasks] = useState([""]);
+  const [loader, setLoader] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setError,
+    clearErrors,
+  } = useForm({
+    defaultValues: {
+      pTitle: "",
+      desc: "",
+      dueDate: "",
+      priority: "",
+    },
+  });
 
   const handleTaskChange = (index, value) => {
     const updated = [...tasks];
     updated[index] = value;
     setTasks(updated);
   };
+  const addTask = () => setTasks([...tasks, ""]);
+  const removeTask = (index) => setTasks(tasks.filter((_, i) => i !== index));
 
-  const addTask = () => setTasks([...tasks, " "]);
+  const onSubmit = (formData) => {
+    const hasValidTask = tasks.some((task) => task.trim() !== "");
+    let isValid = true;
 
-  const removeTask = (index) => {
-    const updated = tasks.filter((_, i) => i !== index);
-    setTasks(updated);
+    if (!hasValidTask) {
+      setError("tasks", { type: "manual", message: "Add at least 1 task" });
+      isValid = false;
+    } else {
+      clearErrors("tasks");
+    }
+
+    if (!isFutureDate(formData.dueDate)) {
+      setError("dueDate", {
+        type: "manual",
+        message: "Date must be in future",
+      });
+      isValid = false;
+    }
+
+    // if (!isValid) {
+    //   Object.values(errors).forEach((error) => {
+    //     showError(error?.message);
+    //   });
+    //   return;
+    // }
+
+    setLoader(true);
+
+    const projectPayload = {
+      pTitle: formData.pTitle.trim(),
+      pDesc: formData.desc.trim(),
+      pDueDate: formData.dueDate,
+      priority: formData.priority,
+      tasks: tasks.filter((task) => task.trim() !== ""),
+    };
+
+    setTimeout(() => {
+      console.log("Submitted Project:", projectPayload);
+      setLoader(false);
+      onClose();
+    }, 1000);
   };
-
+  Object.values(errors).forEach((error) => {
+    showError(error?.message);
+  });
   return (
     <div
       id="projectModal"
       className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-sm transition-all"
       onClick={onClose}
     >
-      {/* <!-- Modal Box --> */}
       <div
         className="bg-white max-h-[99vh] overflow-y-auto w-full max-w-2xl mx-auto my-8 p-8 rounded-3xl shadow-xl border border-gray-200 relative animate-fadeIn"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* <!-- Header with Icon --> */}
+        {/* Header */}
         <div className="flex items-center gap-3 mb-6">
           <svg
             className="w-6 h-6 text-purple-600"
@@ -39,7 +96,6 @@ export default function ProjectModal({ isOpen, onClose, setLoader }) {
             stroke="currentColor"
             strokeWidth="2"
             viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
           >
             <path
               strokeLinecap="round"
@@ -58,70 +114,73 @@ export default function ProjectModal({ isOpen, onClose, setLoader }) {
           </button>
         </div>
 
-        {/* <!-- Form Start --> */}
-        <form onsubmit="submitForm(event)" className="space-y-5">
-          {/* <!-- Project Name --> */}
+        {/* Form */}
+        <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
+          {/* Project Name */}
           <div>
-            <label
-              className="text-sm text-gray-600 block mb-1"
-              htmlFor="projectName"
-            >
+            <label className="text-sm text-gray-600 block mb-1">
               Project Name
             </label>
             <input
+              {...register("pTitle", { required: true })}
               type="text"
-              id="projectName"
-              name="projectName"
               placeholder="Awesome feature tracker"
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
+              className={`w-full px-4 py-2.5 rounded-lg shadow-sm focus:outline-none ${
+                errors.pTitle
+                  ? "border-red-300 focus:ring-1 focus:ring-red-500 animate-shake"
+                  : "border-gray-300 focus:ring-2 focus:ring-purple-500"
+              } border`}
             />
           </div>
 
-          {/* <!-- Description --> */}
+          {/* Description */}
           <div>
-            <label
-              className="text-sm text-gray-600 block mb-1"
-              htmlFor="description"
-            >
+            <label className="text-sm text-gray-600 block mb-1">
               Description
             </label>
             <textarea
-              id="description"
-              name="description"
+              {...register("desc", { required: true })}
               rows="3"
               placeholder="Brief summary"
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
+              className={`w-full px-4 py-2.5 rounded-lg shadow-sm focus:outline-none ${
+                errors.desc
+                  ? "border-red-300 focus:ring-1 focus:ring-red-500 animate-shake"
+                  : "border-gray-300 focus:ring-2 focus:ring-purple-500"
+              } border`}
             ></textarea>
           </div>
 
-          {/* <!-- Due Date & Priority Row --> */}
+          {/* Due Date and Priority */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label
-                className="text-sm text-gray-600 block mb-1"
-                htmlFor="dueDate"
-              >
+              <label className="text-sm text-gray-600 block mb-1">
                 Due Date
               </label>
               <input
+                {...register("dueDate", {
+                  required: true,
+                  validate: isFutureDate,
+                })}
                 type="date"
-                id="dueDate"
-                name="dueDate"
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                className={`w-full px-4 py-2.5 rounded-lg shadow-sm focus:outline-none ${
+                  errors.dueDate
+                    ? "border-red-300 focus:ring-1 focus:ring-red-500 animate-shake"
+                    : "border-gray-300 focus:ring-2 focus:ring-purple-500"
+                } border`}
               />
             </div>
 
             <div>
-              <label
-                className="text-sm text-gray-600 block mb-1"
-                htmlFor="priority"
-              >
+              <label className="text-sm text-gray-600 block mb-1">
                 Priority
               </label>
               <select
-                id="priority"
-                name="priority"
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                {...register("priority", { required: true })}
+                className={`w-full px-2 py-2.5 rounded-lg shadow-sm focus:outline-none ${
+                  errors.priority
+                    ? "border-red-300 focus:ring-1 focus:ring-red-500 animate-shake"
+                    : "border-gray-300 focus:ring-2 focus:ring-purple-500"
+                } border`}
               >
                 <option value="">Choose...</option>
                 <option value="low">Low</option>
@@ -131,23 +190,24 @@ export default function ProjectModal({ isOpen, onClose, setLoader }) {
             </div>
           </div>
 
-          {/* <!-- Team Members --> */}
-
-          {/* <!-- Tasks Section --> */}
+          {/* Tasks */}
           <div>
             <label className="text-sm font-medium text-gray-700 block mb-3">
               Tasks
             </label>
-            <div id="tasksContainer" className="space-y-3">
-              {/* <!-- Default Task Row --> */}
-
+            <div className="space-y-3">
               {tasks.map((task, index) => (
                 <div key={index} className="flex gap-2 animate-fadeIn">
                   <input
                     type="text"
+                    value={task}
                     onChange={(e) => handleTaskChange(index, e.target.value)}
                     placeholder="Task title"
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-purple-500 focus:outline-none"
+                    className={`flex-1 px-4 py-2 rounded-lg shadow-sm focus:outline-none ${
+                      errors.tasks && index === 0
+                        ? "border-red-300 focus:ring-1 focus:ring-red-500 animate-shake"
+                        : "border-gray-300 focus:ring-2 focus:ring-purple-500"
+                    } border`}
                   />
                   <button
                     type="button"
@@ -168,7 +228,7 @@ export default function ProjectModal({ isOpen, onClose, setLoader }) {
             </button>
           </div>
 
-          {/* <!-- Action Buttons --> */}
+          {/* Action Buttons */}
           <div className="flex justify-end pt-4 space-x-3">
             <button
               type="button"
