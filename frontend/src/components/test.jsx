@@ -1,68 +1,109 @@
-import React, { useState, useEffect } from "react";
+// FormComponent.jsx
+import React from "react";
+import { useForm } from "react-hook-form";
+import classNames from "classnames";
 
-const Carousel = () => {
-  const totalSlides = 4;
+const FormComponent = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm();
 
-  const [currentSlide, setCurrentSlide] = useState(0);
-
-  const next = () => {
-    setCurrentSlide((prev) => (prev + 1) % totalSlides);
-  };
-
-  const prev = () => {
-    setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
+  const onSubmit = (data) => {
+    console.log("Form Data:", data);
+    reset();
   };
 
   return (
-    <div>
-      <div className="relative w-full mx-auto overflow-hidden">
+    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-xl shadow-md">
+      <h2 className="text-2xl font-semibold text-center mb-6">Sign Up</h2>
+      <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
+        {/* Name */}
         <div
-          className="flex transition-transform duration-500 ease-in-out w-full"
-          style={{
-            transform: `translateX(-${100 * currentSlide}%)`,
-          }}
+          className={classNames("space-y-1", errors.name && "animate-shake")}
         >
-          <div className="w-full h-60 flex-shrink-0 flex items-center justify-center text-white text-2xl bg-red-500">
-            item 1
-          </div>
-          <div className="w-full h-60 flex-shrink-0 flex items-center justify-center text-white text-2xl bg-blue-500">
-            item 2
-          </div>
-          <div className="w-full h-60 flex-shrink-0 flex items-center justify-center text-white text-2xl bg-green-500">
-            item 3
-          </div>
-          <div className="w-full h-60 flex-shrink-0 flex items-center justify-center text-white text-2xl bg-purple-500">
-            item 5
-          </div>
+          <label className="block font-medium text-gray-700">Name</label>
+          <input
+            {...register("name", { required: "Name is required" })}
+            placeholder="Your Name"
+            className={classNames(
+              "w-full px-4 py-2 border rounded-md outline-none transition",
+              errors.name
+                ? "border-red-500 focus:border-red-500"
+                : "border-gray-300 focus:border-blue-500"
+            )}
+          />
+          {errors.name && (
+            <p className="text-red-500 text-sm">{errors.name.message}</p>
+          )}
         </div>
 
-        {/* Indicators */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-          {Array.from({ length: totalSlides }).map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentSlide(index)}
-              className={`w-3 h-3 rounded-full ${
-                index === currentSlide ? "bg-white" : "bg-white/50"
-              }`}
-            />
-          ))}
+        {/* Email */}
+        <div
+          className={classNames("space-y-1", errors.email && "animate-shake")}
+        >
+          <label className="block font-medium text-gray-700">Email</label>
+          <input
+            {...register("email", {
+              required: "Email is required",
+              pattern: {
+                value: /^\S+@\S+$/i,
+                message: "Invalid email address",
+              },
+            })}
+            placeholder="you@example.com"
+            className={classNames(
+              "w-full px-4 py-2 border rounded-md outline-none transition",
+              errors.email
+                ? "border-red-500 focus:border-red-500"
+                : "border-gray-300 focus:border-blue-500"
+            )}
+          />
+          {errors.email && (
+            <p className="text-red-500 text-sm">{errors.email.message}</p>
+          )}
         </div>
-      </div>
-      <button
-        onClick={prev}
-        className="bg-black/50 text-white px-3 py-1 rounded hover:bg-black/70"
-      >
-        Prev
-      </button>
-      <button
-        onClick={next}
-        className="bg-black/50 text-white px-3 py-1 rounded hover:bg-black/70"
-      >
-        Next
-      </button>
+
+        {/* Password */}
+        <div
+          className={classNames(
+            "space-y-1",
+            errors.password && "animate-shake"
+          )}
+        >
+          <label className="block font-medium text-gray-700">Password</label>
+          <input
+            type="password"
+            {...register("password", {
+              required: "Password is required",
+              minLength: { value: 6, message: "Minimum 6 characters" },
+            })}
+            placeholder="******"
+            className={classNames(
+              "w-full px-4 py-2 border rounded-md outline-none transition",
+              errors.password
+                ? "border-red-500 focus:border-red-500"
+                : "border-gray-300 focus:border-blue-500"
+            )}
+          />
+          {errors.password && (
+            <p className="text-red-500 text-sm">{errors.password.message}</p>
+          )}
+        </div>
+
+        {/* Submit Button */}
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition"
+        >
+          Submit
+        </button>
+      </form>
     </div>
   );
 };
 
-export default Carousel;
+export default FormComponent;

@@ -52,7 +52,7 @@ const projectSchema = new moongose.Schema(
       default: false,
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 const projectModel = moongose.model("Project", projectSchema);

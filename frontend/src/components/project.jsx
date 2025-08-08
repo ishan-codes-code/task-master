@@ -176,6 +176,7 @@ export default function Project() {
             <ProjectCard key={project._id} project={project} />
           ))}
         </div>
+
         <ProjectModal
           isOpen={showModal}
           onClose={() => {

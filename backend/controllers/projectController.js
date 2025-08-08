@@ -33,22 +33,19 @@ const showProjects = async (req, res) => {
 };
 
 const addProject = async (req, res) => {
-  // console.log(req.body.addTasks);
-  if (req.body.addTasks.length > 0) {
-    try {
-      const tasks = await taskModel.insertMany(
-        req.body.addTasks.map((task) => ({
-          title: task.title,
-
-          dueDate: req.body.pDueDate,
+  let tasks;
+  try {
+    tasks = await taskModel.insertMany(
+      req.body.tasks
+        .filter((task) => task.title && task.title.trim() !== "")
+        .map((task) => ({
           userId: req.user._id,
+          title: task.title.trim(),
         }))
-      );
-      req.body.tasks = [...req.body.tasks, ...tasks.map((task) => task)];
-    } catch (err) {
-      console.log(err);
-      return res.status(500).json({ message: "Internal Server Error" });
-    }
+    );
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 
   let savedProject; // Declare it in the outer scope
@@ -59,12 +56,12 @@ const addProject = async (req, res) => {
       desc: req.body.pDesc,
       dueDate: req.body.pDueDate,
       userId: req.user._id,
-      tasks: req.body.tasks.map((task) => task._id),
+      tasks: tasks.map((task) => task._id),
     });
 
     savedProject = await project.save(); // Now assign it here
 
-    const taskIds = req.body.tasks.map((task) => task._id);
+    const taskIds = tasks.map((task) => task._id);
 
     try {
       await taskModel.updateMany(

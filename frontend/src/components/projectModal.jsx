@@ -1,89 +1,60 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useState, useEffect } from "react";
+import { useForm, useFieldArray } from "react-hook-form";
 import { X } from "lucide-react";
 import { isFutureDate } from "../functions/operateDates";
 import { showError, showSuccess } from "./toaster";
+import api from "../service/apiService";
+import { useMyContext } from "../context/Context";
+import { Loader } from "./item";
 
 export default function ProjectModal({ isOpen, onClose }) {
-  if (!isOpen) return null;
-
-  const [tasks, setTasks] = useState([""]);
-  const [loader, setLoader] = useState(false);
+  const { projects, setProjects } = useMyContext();
 
   const {
     register,
+    control,
     handleSubmit,
-    formState: { errors },
-    setError,
-    clearErrors,
+    formState: { errors, isSubmitting },
+    reset,
   } = useForm({
     defaultValues: {
-      pTitle: "",
-      desc: "",
-      dueDate: "",
-      priority: "",
+      tasks: [{ title: "" }],
     },
   });
 
-  const handleTaskChange = (index, value) => {
-    const updated = [...tasks];
-    updated[index] = value;
-    setTasks(updated);
-  };
-  const addTask = () => setTasks([...tasks, ""]);
-  const removeTask = (index) => setTasks(tasks.filter((_, i) => i !== index));
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "tasks",
+  });
 
-  const onSubmit = (formData) => {
-    const hasValidTask = tasks.some((task) => task.trim() !== "");
-    let isValid = true;
+  const [loader, setLoader] = useState(false);
 
-    if (!hasValidTask) {
-      setError("tasks", { type: "manual", message: "Add at least 1 task" });
-      isValid = false;
-    } else {
-      clearErrors("tasks");
-    }
-
-    if (!isFutureDate(formData.dueDate)) {
-      setError("dueDate", {
-        type: "manual",
-        message: "Date must be in future",
-      });
-      isValid = false;
-    }
-
-    // if (!isValid) {
-    //   Object.values(errors).forEach((error) => {
-    //     showError(error?.message);
-    //   });
-    //   return;
-    // }
-
+  const onSubmit = async (data) => {
     setLoader(true);
-
-    const projectPayload = {
-      pTitle: formData.pTitle.trim(),
-      pDesc: formData.desc.trim(),
-      pDueDate: formData.dueDate,
-      priority: formData.priority,
-      tasks: tasks.filter((task) => task.trim() !== ""),
-    };
-
-    setTimeout(() => {
-      console.log("Submitted Project:", projectPayload);
+    try {
+      const response = await api.post("/project/add", data);
+      setProjects((prev) => [...prev, response?.data?.project]);
+      showSuccess(response?.data?.message);
+    } catch (err) {
+      console.log(err);
+      showError(err.response?.data?.message || err.message);
+    } finally {
       setLoader(false);
       onClose();
-    }, 1000);
+    }
   };
-  Object.values(errors).forEach((error) => {
-    showError(error?.message);
-  });
+  useEffect(() => {
+    if (!isOpen) reset();
+  }, [isOpen]);
+
+  if (!isOpen) return null;
   return (
     <div
       id="projectModal"
       className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-sm transition-all"
       onClick={onClose}
     >
+      {loader && <Loader type={2} />}
       <div
         className="bg-white max-h-[99vh] overflow-y-auto w-full max-w-2xl mx-auto my-8 p-8 rounded-3xl shadow-xl border border-gray-200 relative animate-fadeIn"
         onClick={(e) => e.stopPropagation()}
@@ -115,68 +86,81 @@ export default function ProjectModal({ isOpen, onClose }) {
         </div>
 
         {/* Form */}
-        <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
+        <form className={`space-y-5 `} onSubmit={handleSubmit(onSubmit)}>
           {/* Project Name */}
-          <div>
+          <div className={`space-y-1 ${errors.pTitle && "animate-shake"}`}>
             <label className="text-sm text-gray-600 block mb-1">
               Project Name
             </label>
             <input
-              {...register("pTitle", { required: true })}
               type="text"
               placeholder="Awesome feature tracker"
-              className={`w-full px-4 py-2.5 rounded-lg shadow-sm focus:outline-none ${
+              {...register("pTitle", { required: "Project title is required" })}
+              className={`w-full px-4 py-2.5 rounded-lg shadow-sm focus:outline-none transition ${
                 errors.pTitle
-                  ? "border-red-300 focus:ring-1 focus:ring-red-500 animate-shake"
+                  ? "border-red-300 focus:ring-1 focus:ring-red-500"
                   : "border-gray-300 focus:ring-2 focus:ring-purple-500"
               } border`}
             />
+            {errors.pTitle && (
+              <p className="text-red-500 text-sm">{errors.pTitle.message}</p>
+            )}
           </div>
 
           {/* Description */}
-          <div>
+          <div className={`space-y-1 ${errors.pDesc && "animate-shake"}`}>
             <label className="text-sm text-gray-600 block mb-1">
               Description
             </label>
             <textarea
-              {...register("desc", { required: true })}
               rows="3"
               placeholder="Brief summary"
+              {...register("pDesc", { required: "Description is required" })}
               className={`w-full px-4 py-2.5 rounded-lg shadow-sm focus:outline-none ${
-                errors.desc
+                errors.pDesc
                   ? "border-red-300 focus:ring-1 focus:ring-red-500 animate-shake"
                   : "border-gray-300 focus:ring-2 focus:ring-purple-500"
               } border`}
             ></textarea>
+            {errors.pDesc && (
+              <p className="text-red-500 text-sm">{errors.pDesc.message}</p>
+            )}
           </div>
 
           {/* Due Date and Priority */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
+            <div className={`space-y-1 ${errors.pDueDate && "animate-shake"}`}>
               <label className="text-sm text-gray-600 block mb-1">
                 Due Date
               </label>
               <input
-                {...register("dueDate", {
-                  required: true,
+                type="date"
+                {...register("pDueDate", {
+                  required: "Due date is required",
                   validate: isFutureDate,
                 })}
-                type="date"
-                className={`w-full px-4 py-2.5 rounded-lg shadow-sm focus:outline-none ${
-                  errors.dueDate
+                className={`w-full bg-white px-4 py-2.5 rounded-lg shadow-sm focus:outline-none ${
+                  errors.pDueDate
                     ? "border-red-300 focus:ring-1 focus:ring-red-500 animate-shake"
                     : "border-gray-300 focus:ring-2 focus:ring-purple-500"
                 } border`}
               />
+              {errors.pDueDate && (
+                <p className="text-red-500 text-sm">
+                  {errors.pDueDate.message}
+                </p>
+              )}
             </div>
 
-            <div>
+            <div className={`space-y-1 ${errors.priority && "animate-shake"}`}>
               <label className="text-sm text-gray-600 block mb-1">
                 Priority
               </label>
               <select
-                {...register("priority", { required: true })}
-                className={`w-full px-2 py-2.5 rounded-lg shadow-sm focus:outline-none ${
+                {...register("priority", {
+                  required: "Project priority is required",
+                })}
+                className={`w-full bg-white px-2 py-2.5 rounded-lg shadow-sm focus:outline-none ${
                   errors.priority
                     ? "border-red-300 focus:ring-1 focus:ring-red-500 animate-shake"
                     : "border-gray-300 focus:ring-2 focus:ring-purple-500"
@@ -187,41 +171,59 @@ export default function ProjectModal({ isOpen, onClose }) {
                 <option value="medium">Medium</option>
                 <option value="high">High</option>
               </select>
+              {errors.priority && (
+                <p className="text-red-500 text-sm">
+                  {errors.priority.message}
+                </p>
+              )}
             </div>
           </div>
 
           {/* Tasks */}
-          <div>
-            <label className="text-sm font-medium text-gray-700 block mb-3">
-              Tasks
-            </label>
+          <div className={`${errors.tasks && "animate-shake"}`}>
+            <div className="flex justify-between">
+              <label className="text-sm font-medium text-gray-700 block mb-3">
+                Tasks
+              </label>
+              {errors.tasks && (
+                <p className="text-red-500 text-sm">
+                  Atleast one tasks is required
+                </p>
+              )}
+            </div>
             <div className="space-y-3">
-              {tasks.map((task, index) => (
-                <div key={index} className="flex gap-2 animate-fadeIn">
+              {fields.map((field, index) => (
+                <div key={field.id} className="flex gap-2 animate-fadeIn">
                   <input
                     type="text"
-                    value={task}
-                    onChange={(e) => handleTaskChange(index, e.target.value)}
+                    {...register(`tasks.${index}.title`, {
+                      required: index === 0 ? "Task title is required" : false,
+                    })}
                     placeholder="Task title"
-                    className={`flex-1 px-4 py-2 rounded-lg shadow-sm focus:outline-none ${
-                      errors.tasks && index === 0
-                        ? "border-red-300 focus:ring-1 focus:ring-red-500 animate-shake"
+                    className={`flex-1 px-4 py-2 rounded-lg shadow-sm focus:outline-none border ${
+                      errors.tasks?.[index]?.title
+                        ? "border-red-300 focus:ring-1 focus:ring-red-500"
                         : "border-gray-300 focus:ring-2 focus:ring-purple-500"
-                    } border`}
+                    }`}
                   />
-                  <button
-                    type="button"
-                    onClick={() => removeTask(index)}
-                    className="px-3 py-2 bg-red-100 text-red-600 rounded-md hover:bg-red-200"
-                  >
-                    Remove
-                  </button>
+
+                  {index !== 0 && (
+                    <button
+                      type="button"
+                      onClick={() => remove(index)}
+                      className="px-3 py-2 bg-red-100 text-red-600 rounded-md hover:bg-red-200"
+                    >
+                      Remove
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
             <button
               type="button"
-              onClick={addTask}
+              onClick={() => {
+                append({ title: "" });
+              }}
               className="mt-3 text-sm text-purple-600 hover:underline"
             >
               + Add another task
@@ -239,7 +241,8 @@ export default function ProjectModal({ isOpen, onClose }) {
             </button>
             <button
               type="submit"
-              className="px-5 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+              disabled={isSubmitting}
+              className="px-5 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-purple-200"
             >
               Create Project
             </button>

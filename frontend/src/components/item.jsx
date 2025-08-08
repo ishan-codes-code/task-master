@@ -15,7 +15,7 @@ export const Loader = ({ type }) => {
       )}
       {type === 2 && (
         <div
-          className={`absolute top-10 left-1/2 transform -translate-x-1/2 transition-all duration-500 ease-out
+          className={`absolute z-[70] top-10 left-1/2 transform -translate-x-1/2 transition-all duration-500 ease-out
           ${
             show
               ? "opacity-100 scale-100 translate-y-0"
