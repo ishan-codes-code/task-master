@@ -56,6 +56,7 @@ const addProject = async (req, res) => {
       desc: req.body.pDesc,
       dueDate: req.body.pDueDate,
       userId: req.user._id,
+      priority: req.body.priority,
       tasks: tasks.map((task) => task._id),
     });
 

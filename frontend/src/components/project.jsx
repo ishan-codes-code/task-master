@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import ProjectModal2 from "./projectModal2";
 import ProjectModal from "./projectModal";
 import { FaPlus } from "react-icons/fa6";
 import { Loader, Indicator } from "./item";
@@ -183,13 +182,6 @@ export default function Project() {
             setShowModal(false);
           }}
         />
-        {/* <ProjectModal2
-          isOpen={showModal}
-          onClose={() => {
-            setShowModal(false);
-          }}
-          setLoading={setLoader}
-        /> */}
       </div>
     </div>
   );

@@ -9,7 +9,7 @@ import { Loader } from "./item";
 
 export default function ProjectModal({ isOpen, onClose }) {
   const { projects, setProjects } = useMyContext();
-
+  console.log(projects);
   const {
     register,
     control,

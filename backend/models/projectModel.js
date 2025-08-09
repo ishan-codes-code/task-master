@@ -18,6 +18,11 @@ const projectSchema = new moongose.Schema(
       type: Date,
       default: Date.now,
     },
+    priority: {
+      type: String,
+      required: true,
+      enum: ["low", "medium", "high"],
+    },
     status: {
       type: String,
       enum: [
