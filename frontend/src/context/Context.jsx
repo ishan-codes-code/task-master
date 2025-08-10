@@ -6,6 +6,12 @@ const MyContext = createContext();
 export const ContextProvider = ({ children }) => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [accessToken, setAccessToken] = useState(null);
+  const [tasks, setTasks] = useState([]);
+  const [pTasks, setPTasks] = useState([]);
+  const [projects, setProjects] = useState([]);
+  const [showSidebar, setShowSidebar] = useState(false);
+
+  // Not used
   const [tasksData, setTasksData] = useState({
     tasks: [],
     total: 0,
@@ -16,10 +22,6 @@ export const ContextProvider = ({ children }) => {
     total: 0,
     completed: 0,
   });
-  const [tasks, setTasks] = useState([]);
-  const [pTasks, setPTasks] = useState([]);
-  const [projects, setProjects] = useState([]);
-  const [showSidebar, setShowSidebar] = useState(false);
 
   useEffect(() => {
     if (accessToken) {

@@ -1,9 +1,9 @@
-import Calendar from "./calendar";
+import Calendar from "../components/calendar";
 import { useState, useEffect } from "react";
 import { FaPlus } from "react-icons/fa6";
-import Modal from "./modals";
-import { Navbar2 } from "./navbar";
-import ShowTask from "./showTask";
+import Modal from "../components/modals";
+import { Navbar2 } from "../components/navbar";
+import ShowTask from "../components/showTask";
 import { fetchTask } from "../functions/operateTasks";
 import { IoMdClose } from "react-icons/io";
 import { MdDelete, MdModeEdit } from "react-icons/md";
@@ -11,9 +11,9 @@ import api from "../service/apiService";
 import { showError, showSuccess } from "../components/toaster";
 import { useMyContext } from "../context/Context";
 import { formatDateWithLabels } from "../functions/operateDates";
-import TaskModal from "./taskModal";
-import TaskOverview from "./taskOverview";
-import TaskBoard from "./taskBoard";
+import TaskModal from "../components/taskModal";
+import TaskOverview from "../components/taskOverview";
+import TaskBoard from "../components/taskBoard";
 
 export default function Dashboard() {
   const { isMobile, tasksData, setTasksData, tasks } = useMyContext();

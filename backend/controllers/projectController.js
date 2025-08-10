@@ -49,7 +49,7 @@ const addProject = async (req, res) => {
   }
 
   let savedProject; // Declare it in the outer scope
-
+  let pTasks;
   try {
     const project = new projectModel({
       title: req.body.pTitle,
@@ -69,6 +69,7 @@ const addProject = async (req, res) => {
         { _id: { $in: taskIds } },
         { $set: { projectId: project._id } }
       );
+      pTasks = await taskModel.find({ _id: { $in: taskIds } });
     } catch (err) {
       console.log(err);
       return res.status(500).json({ message: "Internal Server Error" });
@@ -78,7 +79,9 @@ const addProject = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 
-  res.status(200).json({ message: "Project added", project: savedProject });
+  res
+    .status(200)
+    .json({ message: "Project added", project: savedProject, pTasks: pTasks });
 };
 
 const showPTasks = async (req, res) => {

@@ -8,12 +8,12 @@ import { useMyContext } from "./context/Context";
 import { useEffect, useState } from "react";
 import { refreshAccessToken } from "./service/authService";
 import { jwtDecode } from "jwt-decode";
-import Dashboard from "./components/dashboard";
-import Tasks from "./components/tasks";
+import Dashboard from "./pages/dashboard";
+import Tasks from "./pages/tasks";
 import WorkSpace from "./pages/workspace";
-import Project from "./components/project";
+import Project from "./pages/project";
 import { attachToken, responseInterceptor } from "./service/apiService";
-import Bin from "./components/bin";
+import Bin from "./pages/bin";
 import ProjectDetails from "./components/projectDetails";
 
 function App() {
@@ -34,8 +34,6 @@ function App() {
       responseInterceptor(setAccessToken);
     }
   }, []);
-
- 
 
   return (
     <div className="min-h-screen w-screen bg-gray-50">

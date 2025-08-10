@@ -33,6 +33,7 @@ export const fetchAllTasks = async (setTasks, setPTasks) => {
     const response = await api.get("task/show");
     if (setTasks) {
       const raw = response.data.tasks;
+      console.log(raw);
       setTasks(Array.isArray(raw) ? raw : [raw]);
     }
     if (setPTasks) {

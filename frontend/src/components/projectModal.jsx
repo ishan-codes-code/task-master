@@ -8,8 +8,8 @@ import { useMyContext } from "../context/Context";
 import { Loader } from "./item";
 
 export default function ProjectModal({ isOpen, onClose }) {
-  const { projects, setProjects } = useMyContext();
-  console.log(projects);
+  const { setProjects, setPTasks } = useMyContext();
+
   const {
     register,
     control,
@@ -34,6 +34,7 @@ export default function ProjectModal({ isOpen, onClose }) {
     try {
       const response = await api.post("/project/add", data);
       setProjects((prev) => [...prev, response?.data?.project]);
+      setPTasks((prev) => [...prev, ...response?.data?.pTasks]);
       showSuccess(response?.data?.message);
     } catch (err) {
       console.log(err);

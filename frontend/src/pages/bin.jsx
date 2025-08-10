@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { useMyContext } from "../context/Context";
-import ScrollItem from "./scrollItem";
+import ScrollItem from "../components/scrollItem";
 import { showError, showSuccess } from "../components/toaster";
 import api from "../service/apiService";
 import { FaEllipsis } from "react-icons/fa6";
-import { Loader, useClickOutside } from "./item";
+import { Loader, useClickOutside } from "../components/item";
 import { vibratePhone } from "../service/vibrate";
 
 export default function Bin() {
@@ -102,7 +102,9 @@ export default function Bin() {
         {droppedTasks.map((task) => (
           <ScrollItem
             onClick={select ? () => selectTasks(task._id) : undefined}
-            styles={` cursor-pointer flex justify-between items-center p-2 w-full sm:w-[80%] lg:w-[60%] mx-auto mb-4 h-auto rounded-lg hover:shadow-lg shadow-md relative transition ${selectedTasks.includes(task._id) ? "bg-gray-100" : "bg-white"}`}
+            styles={` cursor-pointer flex justify-between items-center p-2 w-full sm:w-[80%] lg:w-[60%] mx-auto mb-4 h-auto rounded-lg hover:shadow-lg shadow-md relative transition ${
+              selectedTasks.includes(task._id) ? "bg-gray-100" : "bg-white"
+            }`}
             key={task._id}
           >
             <div className="flex justify-between items-center w-full">
@@ -122,7 +124,7 @@ export default function Bin() {
                 onClick={(e) => {
                   e.stopPropagation();
                   setVisibleTaskOpt(
-                    task._id === visibleTaskOpt ? null : task._id,
+                    task._id === visibleTaskOpt ? null : task._id
                   );
                 }}
                 ref={ellipsisRef}

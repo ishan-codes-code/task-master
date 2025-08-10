@@ -78,14 +78,6 @@ const TaskGroup = ({
   setShowRightCon,
   operateTask,
 }) => {
-  let height;
-
-  if (filteredTasks.length < 1) return;
-  if (filteredTasks.length < 4) {
-    height = "auto";
-  } else if (filteredTasks.length > 4) {
-    height = "400px";
-  }
   const [sortedTasks, setSortedTasks] = useState(filteredTasks);
 
   useEffect(() => {
@@ -109,6 +101,14 @@ const TaskGroup = ({
       ); // A-Z by title
     },
   ];
+  let height;
+
+  if (filteredTasks.length < 1) return null;
+  if (filteredTasks.length < 4) {
+    height = "auto";
+  } else if (filteredTasks.length > 4) {
+    height = "400px";
+  }
 
   return (
     <div className="space-y-4 p-2 ">

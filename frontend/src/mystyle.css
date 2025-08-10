@@ -29,6 +29,40 @@ body {
   width: 30px !important;
 }
 
+.animated-gradient {
+  background: linear-gradient(135deg, #faf7f2, #fdedec, #f9e0e3);
+  background-size: 400% 400%;
+  animation: gradientShift 8s ease infinite;
+}
+
+.animate-div {
+  animation: divShift 8s ease infinite;
+}
+
+@keyframes divShift {
+  0% {
+    right: 100%;
+  }
+  50% {
+    right: -50%;
+  }
+  100% {
+    right: 100%;
+  }
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 @keyframes colorSpin {
   0% {
     border-color: #8b5cf6 transparent #8b5cf6 #8b5cf6;

@@ -1,18 +1,18 @@
 import { useState, useEffect } from "react";
 import { FaPlus } from "react-icons/fa6";
-import Modal from "./modals";
-import ShowTask from "./showTask";
+import Modal from "../components/modals";
+import ShowTask from "../components/showTask";
 import { fetchTask } from "../functions/operateTasks";
 import api from "../service/apiService";
 import { showError, showSuccess } from "../components/toaster";
 import { useMyContext } from "../context/Context";
 import { IoMdClose } from "react-icons/io";
 import { MdDelete, MdModeEdit } from "react-icons/md";
-import TaskOverview from "./taskOverview";
-import TaskModal from "./taskModal";
-import TaskBoard from "./taskBoard";
+import TaskOverview from "../components/taskOverview";
+import TaskModal from "../components/taskModal";
+import TaskBoard from "../components/taskBoard";
 import { PlusCircle } from "lucide-react";
-import CustomSelect from "./customSelect";
+import CustomSelect from "../components/customSelect";
 
 export default function Tasks() {
   const { isMobile, tasksData, setTasksData, tasks } = useMyContext();

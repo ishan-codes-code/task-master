@@ -54,7 +54,6 @@ const showTask = async (req, res) => {
         .find({
           userId: req.user._id,
           isDeleted: false,
-          projectId: null,
         })
         .sort({ createdAt: -1 });
       const pTasks = await taskModel

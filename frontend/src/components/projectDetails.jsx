@@ -11,6 +11,7 @@ import { updateProject, deleteProject } from "../functions/operateProject";
 import { FaEllipsis } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import TaskModal from "./taskModal";
+import { format } from "date-fns";
 
 export default function ProjectDetails() {
   const { id } = useParams();
@@ -35,7 +36,7 @@ export default function ProjectDetails() {
 
   const [pTitle, setPTitle] = useState("");
   const [pDesc, setPDesc] = useState("");
-  const [dueDate, setDueDate] = useState("");
+  const [dueDate, setDueDate] = useState(project.dueDate);
   const [isEditingDueDate, setIsEditingDueDate] = useState(false);
 
   useEffect(() => {
@@ -124,10 +125,11 @@ export default function ProjectDetails() {
   return (
     <>
       {loader && <Loader type={2} />}
+
       <div className="p-6 pt-0 space-y-6 max-w-6xl mx-auto max-h-screen overflow-y-auto">
         {/* Project Header */}
         <div className="flex justify-between items-center ">
-          <div>
+          {/* <div>
             <h1
               contentEditable
               suppressContentEditableWarning
@@ -173,7 +175,7 @@ export default function ProjectDetails() {
                 </span>
               )}
             </p>
-          </div>
+          </div> */}
           <div className="flex gap-2 items-center">
             {(pTitle !== project.title ||
               pDesc !== project.desc ||
@@ -258,6 +260,50 @@ export default function ProjectDetails() {
 
         {/* Overview Section */}
         <div className="bg-white rounded-2xl border p-4 shadow-sm">
+          <h2
+            contentEditable
+            suppressContentEditableWarning
+            className="text-2xl font-bold z-10 relative"
+            onBlur={(e) => {
+              const newText = e.target.textContent.trim();
+              setPTitle(newText);
+            }}
+          >
+            {pTitle}
+          </h2>
+          <p className="text-sm text-gray-500">
+            Due:{" "}
+            {isEditingDueDate ? (
+              <input
+                type="date"
+                value={new Date(dueDate).toISOString().split("T")[0]}
+                className="text-gray-600 text-sm border rounded px-2 py-1"
+                onBlur={(e) => {
+                  if (e.target.value === project.dueDate.split("T")[0]) {
+                    setIsEditingDueDate(false);
+                    return;
+                  }
+                  const isValid = isFutureDate(e.target.value);
+                  if (isValid === true) {
+                    setIsEditingDueDate(false);
+                  } else {
+                    showError(isValid, isMobile);
+                  }
+                }}
+                onChange={(e) => {
+                  setDueDate(e.target.value);
+                }}
+                autoFocus
+              />
+            ) : (
+              <span
+                onClick={() => setIsEditingDueDate(true)}
+                className="text-gray-700 font-medium"
+              >
+                {dueDate && format(dueDate, "MMMM dd, yyyy")}
+              </span>
+            )}
+          </p>
           <p
             contentEditable
             suppressContentEditableWarning
@@ -269,16 +315,26 @@ export default function ProjectDetails() {
           >
             {pDesc}
           </p>
-          <div className="flex justify-between mt-4 text-sm text-gray-500">
+          <div className="flex justify-between mt-4 text-sm text-gray-500 mb-2">
             <span className="flex items-center gap-2">
               Status:
               <Indicator status={project.status} />
             </span>
           </div>
+          <div class="flex justify-between text-sm text-gray-500">
+            <span>{Math.round(percentageCompleted)}% Complete</span>
+            <span>Due: </span>
+          </div>
+          <div class="bg-gray-100 rounded-lg overflow-hidden h-2 mb-3">
+            <div
+              class="h-2 bg-gradient-to-r from-purple-600 to-purple-300"
+              style={{ width: `${percentageCompleted}%` }}
+            ></div>
+          </div>
         </div>
 
         {/* Task List Section */}
-        <div className="bg-white rounded-2xl border p-4 shadow-sm space-y-4">
+        <div className="bg-gradient-to-br from-white to-[#F8F5F0]   rounded-2xl border p-4 shadow-sm space-y-4">
           <div className="flex justify-between items-center">
             <h2 className="text-lg font-medium text-gray-800">Tasks</h2>
             <button
@@ -301,7 +357,7 @@ export default function ProjectDetails() {
             {currentPTasks.map((task) => (
               <li
                 key={task._id}
-                className="flex items-center justify-between bg-gray-50 hover:bg-gray-100 rounded-lg p-3 cursor-pointer active:scale-95 transition"
+                className="flex items-center justify-between border border-gray-300 bg-transparent hover:bg-gray-100 p-3 rounded-xl cursor-pointer active:scale-95 transition"
                 onClick={() => toggleTask(task._id)}
               >
                 <div className="flex items-center gap-2">
@@ -327,19 +383,9 @@ export default function ProjectDetails() {
               </li>
             ))}
           </ul>
-
-          {/* Progress */}
-          <div className="mt-4">
-            <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-purple-600"
-                style={{ width: `${percentageCompleted}%` }}
-              ></div>
-            </div>
-            <p className="text-xs text-gray-500 mt-1">
-              {completedCount} of {currentPTasks.length} tasks completed
-            </p>
-          </div>
+          <p className="text-xs text-gray-500 text-right mt-1">
+            {completedCount} of {currentPTasks.length} tasks completed
+          </p>
         </div>
         <TaskModal
           isOpen={showModal}
