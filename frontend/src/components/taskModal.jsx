@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { showError, showSuccess } from "../components/toaster";
 import { useForm } from "react-hook-form";
@@ -6,15 +6,8 @@ import { useMyContext } from "../context/Context";
 import api from "../service/apiService";
 import { isFutureDate } from "../functions/operateDates";
 
-export default function TaskModal({
-  isOpen,
-  onClose,
-  setProject,
-  pId,
-  setPage,
-  setHasMore,
-}) {
-  const { isMobile, setTasksData, setTasks } = useMyContext();
+export default function TaskModal({ isOpen, onClose, pId }) {
+  const { isMobile, setTasks, setProjects, setPTasks } = useMyContext();
 
   useEffect(() => {
     const escHandler = (e) => e.key === "Escape" && onClose();
@@ -27,7 +20,7 @@ export default function TaskModal({
     handleSubmit,
     setValue,
     reset,
-    formState: { errors, isSubmitting, isSubmitted },
+    formState: { errors, isSubmitting },
   } = useForm();
 
   useEffect(() => {
@@ -44,9 +37,6 @@ export default function TaskModal({
       console.log(response.data);
       showSuccess(response.data.message, isMobile);
 
-      if (setProject) {
-        setProject(response.data.project);
-      }
       if (pId != null) {
         reset({
           projectId: pId,
@@ -56,21 +46,15 @@ export default function TaskModal({
       }
 
       setTasks((prev) => [...prev, response.data.task]);
-      // for the fetching of the new task
-      setTasksData({
-        tasks: [],
-        total: 0,
-        completed: 0,
-      });
-      setHasMore(true);
-      setPage(1);
 
       onClose();
     } catch (err) {
       showError(err.response?.data?.message || err.message, isMobile);
     }
   };
-
+  useEffect(() => {
+    if (!isOpen) reset();
+  }, [isOpen]);
   if (!isOpen) return null;
 
   return (

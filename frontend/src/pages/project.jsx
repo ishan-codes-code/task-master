@@ -5,18 +5,103 @@ import {
   Ellipsis,
   CalendarPlus,
   CalendarClock,
+  CircleCheckBig,
+  Trash2,
 } from "lucide-react";
 import { useMyContext } from "../context/Context";
 import classNames from "classnames";
 import { useState } from "react";
 import ProjectModal from "../components/projectModal";
-import bg from "../assets/bg.png";
+
 import NothingToSee from "../components/nothingToSee";
 import { format } from "date-fns";
+
+function TasksCon({ task }) {
+  const [completed, setCompleted] = useState(task.isCompleted);
+
+  return (
+    <li className="flex items-center justify-between  hover:bg-gray-100 py-2 px-3 rounded-xl transition group ">
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          role="checkbox"
+          aria-checked={completed}
+          onClick={() => setCompleted(!completed)}
+          className="flex items-center justify-center  rounded-full transition-all"
+        >
+          {completed ? (
+            <CircleCheckBig className="text-purple-600 h-5 w-5" />
+          ) : (
+            <span className="border border-gray-400 bg-gray-100 h-5 w-5 rounded-full" />
+          )}
+        </button>
+
+        <span
+          className={classNames(
+            "text-md",
+            completed ? "line-through text-gray-400" : "text-gray-700"
+          )}
+        >
+          {task.title}
+        </span>
+      </div>
+
+      <button
+        type="button"
+        className="active:scale-90 invisible opacity-0 transition-opacity duration-300 group-hover:visible group-hover:opacity-100"
+      >
+        <Trash2 className="w-4 h-4 text-gray-600 " />
+      </button>
+    </li>
+  );
+}
 
 function LeftSec({ project }) {
   const { pTasks } = useMyContext();
   const currentPTasks = pTasks.filter((t) => t.projectId === project._id);
+  const [showModal, setShowModal] = useState(false);
+
+  const toggleTask = async (taskId) => {
+    if (project.status !== "inProgress") {
+      showError("You can't edit tasks until the project is started.");
+      return;
+    }
+    const task = currentPTasks.find((t) => t._id === taskId);
+
+    const updatedTasks = currentPTasks.map((t) =>
+      t._id === taskId ? { ...t, isCompleted: !t.isCompleted } : t
+    );
+    const updatedCompletedCount = updatedTasks.filter(
+      (t) => t.isCompleted
+    ).length;
+    const updatedPercentage =
+      (updatedCompletedCount / updatedTasks.length) * 100;
+
+    const data = { isCompleted: !task.isCompleted };
+
+    setLoader(true);
+    try {
+      const response = await api.put(`/task/update/${taskId}`, data);
+      const updatedTask = response.data.updatedTask;
+      setPTasks((prev) => {
+        return prev.map((t) => (t._id === updatedTask._id ? updatedTask : t));
+      });
+      showSuccess(response.data.message, isMobile);
+
+      updateProject(
+        project._id,
+        {
+          percentageCompleted: updatedPercentage,
+        },
+        setProjects
+      );
+    } catch (error) {
+      console.log("Failed:", error);
+      showError(error.response?.data?.message || error.message, isMobile);
+    } finally {
+      setLoader(false);
+    }
+  };
 
   return (
     <div className=" h-full overflow-y-auto py-4 px-6 flex flex-col gap-5">
@@ -75,33 +160,22 @@ function LeftSec({ project }) {
         {/* Progress Bar */}
         <div class="bg-gray-100 rounded-lg overflow-hidden h-2 mb-3">
           <div
-            class="h-2 bg-gradient-to-r from-purple-600 to-purple-300"
+            className="h-2 bg-gradient-to-r from-purple-600 to-purple-300"
             style={{ width: `${project.percentageCompleted}%` }}
           ></div>
         </div>
         {/* Tasks */}
-        <ul className="space-y-1">
+        <ul>
           {currentPTasks.map((task) => (
-            <li
-              key={task._id}
-              className="flex items-center justify-between bg-transparent hover:bg-gray-100 p-3 rounded-xl cursor-pointer active:scale-95 transition"
-            >
-              <div className="flex items-center gap-2">
-                <input type="checkbox" checked={task.isCompleted} />
-
-                <span
-                  className={`text-md ${
-                    task.isCompleted
-                      ? "line-through text-gray-400"
-                      : "text-gray-700"
-                  }`}
-                >
-                  {task.title}
-                </span>
-              </div>
-              {task.isCompleted && "+"}
-            </li>
+            <TasksCon key={task._id} task={task} />
           ))}
+          <button
+            type="button"
+            className="mt-3 text-sm text-purple-600 hover:underline"
+            onClick={() => setShowModal(true)}
+          >
+            + Add another task
+          </button>
         </ul>
       </div>
     </div>
@@ -186,7 +260,7 @@ export default function Projects() {
   const [selectedProject, setSelectedProject] = useState({});
 
   return (
-    <div className="bg-white w-full h-screen grid grid-cols-[30%,70%] pb-20 sm:pb-0">
+    <div className="bg-white w-full h-screen grid md:grid-cols-[30%,70%] pb-20 sm:pb-0">
       <ProjectsSidebar
         projects={projects}
         setShowModal={setShowModal}
