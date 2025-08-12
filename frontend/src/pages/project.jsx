@@ -12,15 +12,15 @@ import { useMyContext } from "../context/Context";
 import classNames from "classnames";
 import { useState } from "react";
 import ProjectModal from "../components/projectModal";
-
 import NothingToSee from "../components/nothingToSee";
 import { format } from "date-fns";
+import { motion, AnimatePresence, easeInOut } from "framer-motion";
 
 function TasksCon({ task }) {
   const [completed, setCompleted] = useState(task.isCompleted);
 
   return (
-    <li className="flex items-center justify-between  hover:bg-gray-100 py-2 px-3 rounded-xl transition group ">
+    <li className="flex items-center justify-between hover:bg-gray-100 py-2 px-3 rounded-xl transition group ">
       <div className="flex items-center gap-3">
         <button
           type="button"
@@ -60,6 +60,15 @@ function LeftSec({ project }) {
   const { pTasks } = useMyContext();
   const currentPTasks = pTasks.filter((t) => t.projectId === project._id);
   const [showModal, setShowModal] = useState(false);
+  const [closing, setClosing] = useState(false);
+
+  const closeForm = () => {
+    setClosing(true);
+    setTimeout(() => {
+      setShowModal(false);
+      setClosing(false);
+    }, 400); // match animation duration
+  };
 
   const toggleTask = async (taskId) => {
     if (project.status !== "inProgress") {
@@ -169,14 +178,53 @@ function LeftSec({ project }) {
           {currentPTasks.map((task) => (
             <TasksCon key={task._id} task={task} />
           ))}
-          <button
-            type="button"
-            className="mt-3 text-sm text-purple-600 hover:underline"
-            onClick={() => setShowModal(true)}
-          >
-            + Add another task
-          </button>
         </ul>
+        <AnimatePresence mode="wait">
+          {showModal ? (
+            <motion.form
+              key="form"
+              initial={{ width: 0, opacity: 0 }}
+              animate={{ width: "100%", opacity: 1 }}
+              exit={{ width: 0, opacity: 0 }}
+              transition={{ duration: 0.4, ease: "easeInOut" }}
+              className="flex items-center gap-8 overflow-hidden min-w-0"
+            >
+              <input
+                type="text"
+                placeholder="Enter another task"
+                className="outline-none border-b-2 border-purple-600 ml-2 w-full pb-2"
+              />
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="px-4 py-1.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 border active:scale-95 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="px-4 py-1.5 bg-purple-500 text-white rounded-lg hover:bg-purple-700 disabled:bg-purple-200 active:scale-95 transition"
+                >
+                  Submit
+                </button>
+              </div>
+            </motion.form>
+          ) : (
+            <motion.button
+              key="button"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.4, ease: "easeInOut" }}
+              type="button"
+              className="mt-3 text-sm text-purple-600 hover:underline self-start"
+              onClick={() => setShowModal(true)}
+            >
+              + Add another task
+            </motion.button>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
