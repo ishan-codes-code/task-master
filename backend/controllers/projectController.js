@@ -152,10 +152,53 @@ const deleteProject = async (req, res) => {
   }
 };
 
+const deletePTasks = async (req, res) => {
+  const { taskId } = req.body;
+  const userId = req.user._id;
+
+  try {
+    // Check if the task exists for this user
+    const task = await taskModel.findOne({ _id: taskId, userId });
+    if (!task) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Task not found" });
+    }
+
+    const project = await projectModel.findById(task.projectId);
+    if (project.tasks.length <= 1) {
+      return res.status(400).json({
+        success: false,
+        message: "A project must have at least one task.",
+      });
+    }
+
+    // Remove task from its project
+    const updatedProject = await projectModel.findOneAndUpdate(
+      { _id: task.projectId },
+      { $pull: { tasks: taskId } },
+      { new: true }
+    );
+
+    // Delete the task
+    await taskModel.deleteOne({ _id: taskId });
+
+    res.status(200).json({
+      success: true,
+      message: "Task deleted",
+      project: updatedProject, // send back updated project if needed
+    });
+  } catch (error) {
+    console.error("Error deleting project task:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
 module.exports = {
   addProject,
   showProjects,
   showPTasks,
   updateProject,
   deleteProject,
+  deletePTasks,
 };

@@ -79,7 +79,7 @@ export default function Bin() {
   });
 
   return (
-    <div className="h-full">
+    <div className="h-full animate-fadeIn">
       <div className="w-full flex justify-end items-center px-6">
         {select && (
           <div

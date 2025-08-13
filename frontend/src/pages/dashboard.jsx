@@ -64,7 +64,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="h-full w-full flex md:flex-row flex-col  ">
+    <div className="h-full w-full flex md:flex-row flex-col animate-fadeIn">
       <div
         className={`px-6 overflow-auto transition-[min-width] ${
           showRightCon ? "md:min-w-[70%]" : "md:min-w-[100%]"

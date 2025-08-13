@@ -14,9 +14,14 @@ import { useState } from "react";
 import ProjectModal from "../components/projectModal";
 import NothingToSee from "../components/nothingToSee";
 import { format } from "date-fns";
-import { motion, AnimatePresence, easeInOut } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useForm } from "react-hook-form";
+import api from "../service/apiService";
+import { showError, showSuccess } from "../components/toaster";
+import { Loader } from "../components/item";
+import DelTasksModal from "../components/delTasksModal";
 
-function TasksCon({ task }) {
+function TasksCon({ task, setDelTaskModal }) {
   const [completed, setCompleted] = useState(task.isCompleted);
 
   return (
@@ -48,6 +53,7 @@ function TasksCon({ task }) {
 
       <button
         type="button"
+        onClick={() => setDelTaskModal(task._id)}
         className="active:scale-90 invisible opacity-0 transition-opacity duration-300 group-hover:visible group-hover:opacity-100"
       >
         <Trash2 className="w-4 h-4 text-gray-600 " />
@@ -56,18 +62,30 @@ function TasksCon({ task }) {
   );
 }
 
-function LeftSec({ project }) {
-  const { pTasks } = useMyContext();
+function LeftSec({ project, setDelTaskModal }) {
+  const { pTasks, setPTasks } = useMyContext();
   const currentPTasks = pTasks.filter((t) => t.projectId === project._id);
-  const [showModal, setShowModal] = useState(false);
-  const [closing, setClosing] = useState(false);
+  const [isAddVisible, setAddVisible] = useState(false);
 
-  const closeForm = () => {
-    setClosing(true);
-    setTimeout(() => {
-      setShowModal(false);
-      setClosing(false);
-    }, 400); // match animation duration
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm();
+
+  const onSubmit = async (data) => {
+    try {
+      const response = await api.post("/task/add", data);
+      console.log(response.data);
+      showSuccess(response.data.message);
+
+      setPTasks((prev) => [...prev, response.data.task]);
+      setAddVisible(false);
+      reset();
+    } catch (err) {
+      showError(err.response?.data?.message || err.message);
+    }
   };
 
   const toggleTask = async (taskId) => {
@@ -167,7 +185,7 @@ function LeftSec({ project }) {
           TASKS ({project.percentageCompleted}%)
         </p>
         {/* Progress Bar */}
-        <div class="bg-gray-100 rounded-lg overflow-hidden h-2 mb-3">
+        <div className="bg-gray-100 rounded-lg overflow-hidden h-2 mb-3">
           <div
             className="h-2 bg-gradient-to-r from-purple-600 to-purple-300"
             style={{ width: `${project.percentageCompleted}%` }}
@@ -176,35 +194,59 @@ function LeftSec({ project }) {
         {/* Tasks */}
         <ul>
           {currentPTasks.map((task) => (
-            <TasksCon key={task._id} task={task} />
+            <TasksCon
+              key={task._id}
+              task={task}
+              setDelTaskModal={setDelTaskModal}
+            />
           ))}
         </ul>
         <AnimatePresence mode="wait">
-          {showModal ? (
+          {isAddVisible ? (
             <motion.form
               key="form"
+              onSubmit={handleSubmit(onSubmit)}
               initial={{ width: 0, opacity: 0 }}
               animate={{ width: "100%", opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
-              transition={{ duration: 0.4, ease: "easeInOut" }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
               className="flex items-center gap-8 overflow-hidden min-w-0"
             >
+              <div className="flex-1 relative">
+                <input
+                  type="text"
+                  placeholder="Enter another task"
+                  className="outline-none border-b-2 border-purple-600 ml-2 w-full pb-2"
+                  {...register("title", {
+                    required: "Task title is required",
+                  })}
+                />
+                {isSubmitting && (
+                  <span className="absolute bottom-1/2 right-0">
+                    <Loader type={3} />
+                  </span>
+                )}
+              </div>
               <input
-                type="text"
-                placeholder="Enter another task"
-                className="outline-none border-b-2 border-purple-600 ml-2 w-full pb-2"
+                type="hidden"
+                value={project._id}
+                {...register("projectId")}
               />
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => setShowModal(false)}
+                  onClick={() => {
+                    setAddVisible(false);
+                    reset();
+                  }}
                   className="px-4 py-1.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 border active:scale-95 transition"
                 >
                   Cancel
                 </button>
                 <button
-                  type="button"
-                  className="px-4 py-1.5 bg-purple-500 text-white rounded-lg hover:bg-purple-700 disabled:bg-purple-200 active:scale-95 transition"
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="px-4 py-1.5 bg-purple-500 text-white rounded-lg hover:bg-purple-700 disabled:bg-purple-200 active:scale-95 transition disabled:cursor-not-allowed"
                 >
                   Submit
                 </button>
@@ -216,10 +258,10 @@ function LeftSec({ project }) {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.4, ease: "easeInOut" }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
               type="button"
               className="mt-3 text-sm text-purple-600 hover:underline self-start"
-              onClick={() => setShowModal(true)}
+              onClick={() => setAddVisible(true)}
             >
               + Add another task
             </motion.button>
@@ -298,17 +340,18 @@ function ProjectsSidebar({
   );
 }
 
-function ProjectContent({ project }) {
-  return <LeftSec project={project} />;
+function ProjectContent({ project, setDelTaskModal }) {
+  return <LeftSec project={project} setDelTaskModal={setDelTaskModal} />;
 }
 
 export default function Projects() {
   const { projects } = useMyContext();
   const [showModal, setShowModal] = useState(false);
+  const [showDelTaskModal, setDelTaskModal] = useState("");
   const [selectedProject, setSelectedProject] = useState({});
 
   return (
-    <div className="bg-white w-full h-screen grid md:grid-cols-[30%,70%] pb-20 sm:pb-0">
+    <div className="bg-white w-full h-screen grid md:grid-cols-[30%,70%] pb-20 sm:pb-0 animate-fadeIn">
       <ProjectsSidebar
         projects={projects}
         setShowModal={setShowModal}
@@ -316,7 +359,10 @@ export default function Projects() {
         setSelectedProject={setSelectedProject}
       />
       {selectedProject._id ? (
-        <ProjectContent project={selectedProject} />
+        <ProjectContent
+          project={selectedProject}
+          setDelTaskModal={setDelTaskModal}
+        />
       ) : (
         <NothingToSee />
       )}
@@ -327,6 +373,14 @@ export default function Projects() {
           setShowModal(false);
         }}
       />
+      <AnimatePresence mode="wait">
+        {showDelTaskModal && (
+          <DelTasksModal
+            taskId={showDelTaskModal}
+            onClose={() => setDelTaskModal("")}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

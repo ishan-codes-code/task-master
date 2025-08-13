@@ -69,7 +69,7 @@ export default function Tasks() {
     },
   ];
   return (
-    <div className="h-screen w-full flex md:flex-row flex-col">
+    <div className="h-screen w-full flex md:flex-row flex-col animate-fadeIn">
       <div
         className={`px-6 py-4 flex-1 transition-[min-width] overflow-y-auto ${
           showRightCon

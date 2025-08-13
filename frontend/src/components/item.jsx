@@ -33,7 +33,7 @@ export const Loader = ({ type }) => {
       )}
       {type === 3 && (
         <div
-          className="h-6 w-6 rounded-full border-[3px] border-t-transparent animate-spin"
+          className="h-4 w-4 rounded-full border-[2px] border-t-transparent animate-spin"
           style={{
             animation: "spin 1s linear infinite, colorSpin 4s linear infinite",
           }}
