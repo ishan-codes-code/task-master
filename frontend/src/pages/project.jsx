@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { useMyContext } from "../context/Context";
 import classNames from "classnames";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ProjectModal from "../components/projectModal";
 import NothingToSee from "../components/nothingToSee";
 import { format } from "date-fns";
@@ -19,7 +19,7 @@ import { useForm } from "react-hook-form";
 import api from "../service/apiService";
 import { showError, showSuccess } from "../components/toaster";
 import { Loader } from "../components/item";
-import DelTasksModal from "../components/delTasksModal";
+import { DelTasksModal, DelPojectModal } from "../components/delModal";
 
 function TasksCon({ task, setDelTaskModal }) {
   const [completed, setCompleted] = useState(task.isCompleted);
@@ -272,6 +272,41 @@ function LeftSec({ project, setDelTaskModal }) {
   );
 }
 
+function RightSec({ project }) {
+  const [showProjDelModal, setShowProjDelModal] = useState();
+
+  return (
+    <div className="px-4 py-4">
+      <p className="text-gray-500 text-xs font-medium mb-2">ACTIONS</p>
+      <div>
+        <button
+          onClick={() => setShowProjDelModal(project)}
+          className="
+           flex items-center pr-2 py-1 gap-2 text-sm active:scale-95 rounded-xl
+           relative overflow-hidden bg-transparent cursor-pointer z-0 hover:text-red-500 transition-all font-semibold
+           after:content-[''] after:absolute after:top-0 after:left-0 after:w-0 after:h-full after:bg-red-100
+           after:transition-all after:duration-300 after:ease-in-out after:-z-10
+           hover:after:w-full
+         "
+        >
+          <span className="text-red-500 bg-red-100 p-2 rounded-xl">
+            <Trash2 className="w-4 h-4" />
+          </span>
+          Delete Project
+        </button>
+      </div>
+      <AnimatePresence mode="wait">
+        {showProjDelModal && (
+          <DelPojectModal
+            project={showProjDelModal}
+            onClose={() => setShowProjDelModal()}
+          />
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 function ProjectsSidebar({
   projects,
   setShowModal,
@@ -341,7 +376,12 @@ function ProjectsSidebar({
 }
 
 function ProjectContent({ project, setDelTaskModal }) {
-  return <LeftSec project={project} setDelTaskModal={setDelTaskModal} />;
+  return (
+    <div className="grid grid-cols-[71%,29%] divide-x divide-gray-300 h-full overflow-y-auto">
+      <LeftSec project={project} setDelTaskModal={setDelTaskModal} />
+      <RightSec project={project} />
+    </div>
+  );
 }
 
 export default function Projects() {
@@ -350,8 +390,16 @@ export default function Projects() {
   const [showDelTaskModal, setDelTaskModal] = useState("");
   const [selectedProject, setSelectedProject] = useState({});
 
+  useEffect(() => {
+    if (setSelectedProject) {
+      setSelectedProject((prev) => {
+        return projects.find((p) => p._id === prev._id) || {};
+      });
+    }
+  }, [projects]);
+
   return (
-    <div className="bg-white w-full h-screen grid md:grid-cols-[30%,70%] pb-20 sm:pb-0 animate-fadeIn">
+    <div className="bg-white w-full h-screen grid md:grid-cols-[30%,70%] pb-20 sm:pb-0 animate-fadeIn divide-x divide-gray-300">
       <ProjectsSidebar
         projects={projects}
         setShowModal={setShowModal}
@@ -364,7 +412,7 @@ export default function Projects() {
           setDelTaskModal={setDelTaskModal}
         />
       ) : (
-        <NothingToSee />
+        <div></div>
       )}
 
       <ProjectModal
