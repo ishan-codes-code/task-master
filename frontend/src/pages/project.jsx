@@ -20,6 +20,7 @@ import api from "../service/apiService";
 import { showError, showSuccess } from "../components/toaster";
 import { Loader } from "../components/item";
 import { DelTasksModal, DelPojectModal } from "../components/delModal";
+import Timer from "../components/timer";
 
 function TasksCon({ task, setDelTaskModal }) {
   const [completed, setCompleted] = useState(task.isCompleted);
@@ -277,6 +278,8 @@ function RightSec({ project }) {
 
   return (
     <div className="px-4 py-4">
+      <Timer date={project.dueDate} />
+
       <p className="text-gray-500 text-xs font-medium mb-2">ACTIONS</p>
       <div>
         <button
@@ -377,10 +380,16 @@ function ProjectsSidebar({
 
 function ProjectContent({ project, setDelTaskModal }) {
   return (
-    <div className="grid grid-cols-[71%,29%] divide-x divide-gray-300 h-full overflow-y-auto">
+    <motion.div
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      transition={{ duration: 0.3, ease: "easeInOut" }}
+      className="grid grid-cols-[71%,29%] divide-x divide-gray-300 h-full overflow-y-auto"
+    >
       <LeftSec project={project} setDelTaskModal={setDelTaskModal} />
       <RightSec project={project} />
-    </div>
+    </motion.div>
   );
 }
 
@@ -406,14 +415,14 @@ export default function Projects() {
         selectedProject={selectedProject}
         setSelectedProject={setSelectedProject}
       />
-      {selectedProject._id ? (
-        <ProjectContent
-          project={selectedProject}
-          setDelTaskModal={setDelTaskModal}
-        />
-      ) : (
-        <div></div>
-      )}
+      <AnimatePresence mode="wait">
+        {selectedProject._id && (
+          <ProjectContent
+            project={selectedProject}
+            setDelTaskModal={setDelTaskModal}
+          />
+        )}
+      </AnimatePresence>
 
       <ProjectModal
         isOpen={showModal}
