@@ -104,7 +104,6 @@ export default function Tasks() {
         </div>
         {tasks.length > 0 ? (
           <TaskBoard
-            tasks={tasks}
             setOperateTask={setOperateTask}
             setShowRightCon={setShowRightCon}
             showRightCon={showRightCon}

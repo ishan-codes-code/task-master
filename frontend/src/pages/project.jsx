@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { useMyContext } from "../context/Context";
 import classNames from "classnames";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import ProjectModal from "../components/projectModal";
 import NothingToSee from "../components/nothingToSee";
 import { format } from "date-fns";
@@ -21,10 +21,21 @@ import { showError, showSuccess } from "../components/toaster";
 import { Loader } from "../components/item";
 import { DelTasksModal, DelPojectModal } from "../components/delModal";
 import Timer from "../components/timer";
-import Test from "../components/test";
+import { updateTask } from "../functions/operateTasks";
 
 function TasksCon({ task, setDelTaskModal }) {
-  const [completed, setCompleted] = useState(task.isCompleted);
+  const { pTasks, setPTasks } = useMyContext();
+  const [loading, setLoading] = useState(false);
+
+  const handleCompleted = () => {
+    updateTask(
+      task._id,
+      { isCompleted: !task.isCompleted },
+      undefined,
+      setLoading,
+      setPTasks
+    );
+  };
 
   return (
     <motion.li
@@ -39,12 +50,12 @@ function TasksCon({ task, setDelTaskModal }) {
         <button
           type="button"
           role="checkbox"
-          aria-checked={completed}
-          onClick={() => setCompleted(!completed)}
+          aria-checked={task.isCompleted}
+          onClick={() => handleCompleted()}
           className="flex items-center justify-center rounded-full transition-all"
         >
           <AnimatePresence mode="wait">
-            {completed ? (
+            {task.isCompleted ? (
               <motion.span
                 key={"tick"}
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -70,27 +81,34 @@ function TasksCon({ task, setDelTaskModal }) {
         <span
           className={classNames(
             "text-md",
-            completed ? "line-through text-gray-400" : "text-gray-700"
+            task.isCompleted ? "line-through text-gray-400" : "text-gray-700"
           )}
         >
           {task.title}
         </span>
       </div>
-
-      <button
-        type="button"
-        onClick={() => setDelTaskModal(task._id)}
-        className="active:scale-90 invisible opacity-0 transition-opacity duration-300 group-hover:visible group-hover:opacity-100"
-      >
-        <Trash2 className="w-4 h-4 text-gray-600 " />
-      </button>
+      <div className="flex items-center gap-2">
+        <motion.div key={"delBtn"} layout>
+          <button
+            type="button"
+            onClick={() => setDelTaskModal(task._id)}
+            className="active:scale-90 invisible opacity-0 transition-opacity duration-300 group-hover:visible group-hover:opacity-100"
+          >
+            <Trash2 className="w-4 h-4 text-gray-600 " />
+          </button>
+        </motion.div>
+        {loading && <Loader type={3} />}
+      </div>
     </motion.li>
   );
 }
 
 function LeftSec({ project, setDelTaskModal }) {
   const { pTasks, setPTasks } = useMyContext();
-  const currentPTasks = pTasks.filter((t) => t.projectId === project._id);
+  const currentPTasks = useMemo(
+    () => pTasks.filter((t) => t.projectId === project._id),
+    [pTasks, project._id]
+  );
   const [isAddVisible, setAddVisible] = useState(false);
 
   const {
@@ -111,48 +129,6 @@ function LeftSec({ project, setDelTaskModal }) {
       reset();
     } catch (err) {
       showError(err.response?.data?.message || err.message);
-    }
-  };
-
-  const toggleTask = async (taskId) => {
-    if (project.status !== "inProgress") {
-      showError("You can't edit tasks until the project is started.");
-      return;
-    }
-    const task = currentPTasks.find((t) => t._id === taskId);
-
-    const updatedTasks = currentPTasks.map((t) =>
-      t._id === taskId ? { ...t, isCompleted: !t.isCompleted } : t
-    );
-    const updatedCompletedCount = updatedTasks.filter(
-      (t) => t.isCompleted
-    ).length;
-    const updatedPercentage =
-      (updatedCompletedCount / updatedTasks.length) * 100;
-
-    const data = { isCompleted: !task.isCompleted };
-
-    setLoader(true);
-    try {
-      const response = await api.put(`/task/update/${taskId}`, data);
-      const updatedTask = response.data.updatedTask;
-      setPTasks((prev) => {
-        return prev.map((t) => (t._id === updatedTask._id ? updatedTask : t));
-      });
-      showSuccess(response.data.message, isMobile);
-
-      updateProject(
-        project._id,
-        {
-          percentageCompleted: updatedPercentage,
-        },
-        setProjects
-      );
-    } catch (error) {
-      console.log("Failed:", error);
-      showError(error.response?.data?.message || error.message, isMobile);
-    } finally {
-      setLoader(false);
     }
   };
 

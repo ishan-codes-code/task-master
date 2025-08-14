@@ -47,7 +47,7 @@ export const fetchAllTasks = async (setTasks, setPTasks) => {
 export const updateTask = async (
   taskId,
   updates,
-  setTask,
+  setOperateTask,
   setLoader,
   setTasks
 ) => {
@@ -55,7 +55,7 @@ export const updateTask = async (
     if (setLoader) setLoader(true);
     const response = await api.put(`/task/update/${taskId}`, updates);
     const updatedTask = response.data.updatedTask;
-    if (setTask) setTask(updatedTask);
+    if (setOperateTask) setOperateTask(updatedTask);
     if (setTasks)
       setTasks((prev) => {
         if (!Array.isArray(prev)) {
@@ -64,6 +64,7 @@ export const updateTask = async (
         }
         return prev.map((t) => (t._id === updatedTask._id ? updatedTask : t));
       });
+
     return true;
   } catch (err) {
     console.log(err);

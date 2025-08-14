@@ -3,6 +3,7 @@ import classNames from "classnames";
 import { formatDistanceToNowStrict, differenceInDays, format } from "date-fns";
 import CustomSelect from "./customSelect";
 import NothingToSee from "./nothingToSee";
+import { useMyContext } from "../context/Context";
 
 const TaskCard = ({ task, setOperateTask, setShowRightCon, operateTask }) => {
   const msLeft = new Date(task.dueDate) - new Date();
@@ -141,7 +142,6 @@ const TaskGroup = ({
 };
 
 function TaskBoard({
-  tasks,
   setOperateTask,
   setShowRightCon,
   showRightCon,
@@ -149,6 +149,8 @@ function TaskBoard({
   onlyDueSoon,
   status,
 }) {
+  const { tasks } = useMyContext();
+
   if (!Array.isArray(tasks)) {
     return <div>Loading tasks...</div>; // or null
   }
