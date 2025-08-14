@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 
 // Helper: formats number to always be two digits
 function getTimeLeft(target) {
@@ -27,20 +26,6 @@ function getTimeLeft(target) {
 }
 
 // Animated number component
-function AnimatedNumber({ value }) {
-  return (
-    <motion.div
-      key={value}
-      initial={{ y: -10, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      exit={{ y: 10, opacity: 0 }}
-      transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="timer-numbers rounded-md font-bold"
-    >
-      {value}
-    </motion.div>
-  );
-}
 
 export default function Timer({ date }) {
   const [timeLeft, setTimeLeft] = useState(getTimeLeft(date));
@@ -53,43 +38,52 @@ export default function Timer({ date }) {
   }, [date]);
 
   return (
-    <AnimatePresence mode="wait">
-      <div className="flex items-center gap-2 text-center">
-        {/* Days */}
+    <div className="flex items-center justify-center gap-2 text-center m-auto ">
+      {/* Days */}
+      {timeLeft.d > 0 && (
         <div className="flex items-center gap-2">
           <div>
-            <div>{timeLeft.d}</div>
-            <div className="text-[10px]">days</div>
+            <div className="font-bold">{timeLeft.d}</div>
+
+            <div className="text-[10px]">Days</div>
           </div>
           <div className="timer-colon">:</div>
         </div>
+      )}
 
-        {/* Hours */}
+      {/* Hours */}
+      {(timeLeft.h > 0 || timeLeft.d > 0) && (
         <div className="flex items-center gap-2">
           <div>
-            <div>{timeLeft.h}</div>
-            <div className="text-[10px]">hours</div>
+            <div className="font-bold">{timeLeft.h}</div>
+
+            <div className="text-[10px]">Hours</div>
           </div>
           <div className="timer-colon">:</div>
         </div>
+      )}
 
-        {/* Minutes */}
+      {/* Minutes */}
+      {(timeLeft.m > 0 || timeLeft.h > 0) && (
         <div className="flex items-center gap-2">
           <div>
-            <div>{timeLeft.m}</div>
-            <div className="text-[10px]">minutes</div>
+            <div className="font-bold">{timeLeft.m}</div>
+
+            <div className="text-[10px]">Minutes</div>
           </div>
           <div className="timer-colon">:</div>
         </div>
+      )}
 
-        {/* Seconds */}
+      {/* Seconds */}
+      {(timeLeft.s > 0 || timeLeft.m > 0) && (
         <div className="flex items-center gap-2">
           <div>
-            <div>{timeLeft.s}</div>
-            <div className="text-[10px]">seconds</div>
+            <div className="font-bold">{timeLeft.s}</div>
+            <div className="text-[10px]">Seconds</div>
           </div>
         </div>
-      </div>
-    </AnimatePresence>
+      )}
+    </div>
   );
 }

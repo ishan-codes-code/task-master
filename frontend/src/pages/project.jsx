@@ -21,25 +21,50 @@ import { showError, showSuccess } from "../components/toaster";
 import { Loader } from "../components/item";
 import { DelTasksModal, DelPojectModal } from "../components/delModal";
 import Timer from "../components/timer";
+import Test from "../components/test";
 
 function TasksCon({ task, setDelTaskModal }) {
   const [completed, setCompleted] = useState(task.isCompleted);
 
   return (
-    <li className="flex items-center justify-between hover:bg-gray-100 py-2 px-3 rounded-xl transition group ">
+    <motion.li
+      key={task._id}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.4, ease: "easeInOut" }}
+      className="flex items-center justify-between hover:bg-gray-100 py-2 px-3 rounded-xl transition group "
+    >
       <div className="flex items-center gap-3">
         <button
           type="button"
           role="checkbox"
           aria-checked={completed}
           onClick={() => setCompleted(!completed)}
-          className="flex items-center justify-center  rounded-full transition-all"
+          className="flex items-center justify-center rounded-full transition-all"
         >
-          {completed ? (
-            <CircleCheckBig className="text-purple-600 h-5 w-5" />
-          ) : (
-            <span className="border border-gray-400 bg-gray-100 h-5 w-5 rounded-full" />
-          )}
+          <AnimatePresence mode="wait">
+            {completed ? (
+              <motion.span
+                key={"tick"}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.1, ease: "easeInOut" }}
+              >
+                <CircleCheckBig className="text-purple-600 h-5 w-5" />
+              </motion.span>
+            ) : (
+              <motion.span
+                key={"notTick"}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.1, ease: "easeInOut" }}
+                className="border border-gray-400 bg-gray-100 h-5 w-5 rounded-full"
+              />
+            )}
+          </AnimatePresence>
         </button>
 
         <span
@@ -59,7 +84,7 @@ function TasksCon({ task, setDelTaskModal }) {
       >
         <Trash2 className="w-4 h-4 text-gray-600 " />
       </button>
-    </li>
+    </motion.li>
   );
 }
 
@@ -181,7 +206,8 @@ function LeftSec({ project, setDelTaskModal }) {
         <p className="text-gray-500 text-xs mb-1 font-medium">DESCRIPTION</p>
         <p className="text-gray-500 text-sm font-semibold">{project.desc}</p>
       </div>
-      <div className="flex flex-col gap-2">
+
+      <div className="flex flex-col gap-2 ">
         <p className="text-gray-500 text-xs font-medium">
           TASKS ({project.percentageCompleted}%)
         </p>
@@ -193,6 +219,7 @@ function LeftSec({ project, setDelTaskModal }) {
           ></div>
         </div>
         {/* Tasks */}
+
         <ul>
           {currentPTasks.map((task) => (
             <TasksCon
@@ -202,9 +229,11 @@ function LeftSec({ project, setDelTaskModal }) {
             />
           ))}
         </ul>
+
         <AnimatePresence mode="wait">
           {isAddVisible ? (
             <motion.form
+              layout
               key="form"
               onSubmit={handleSubmit(onSubmit)}
               initial={{ width: 0, opacity: 0 }}
@@ -255,6 +284,7 @@ function LeftSec({ project, setDelTaskModal }) {
             </motion.form>
           ) : (
             <motion.button
+              layout
               key="button"
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -275,29 +305,41 @@ function LeftSec({ project, setDelTaskModal }) {
 
 function RightSec({ project }) {
   const [showProjDelModal, setShowProjDelModal] = useState();
+  const [checked, setChecked] = useState(false);
 
   return (
-    <div className="px-4 py-4">
-      <Timer date={project.dueDate} />
-
-      <p className="text-gray-500 text-xs font-medium mb-2">ACTIONS</p>
+    <div className="px-4 py-4 space-y-5">
       <div>
-        <button
-          onClick={() => setShowProjDelModal(project)}
-          className="
+        <p className="text-gray-500 text-xs font-medium mb-2">TIME REMAINING</p>
+        <Timer date={project.dueDate} />
+      </div>
+      <div>
+        <p className="text-gray-500 text-xs font-medium mb-1">ACTIONS</p>
+        <div>
+          <button
+            onClick={() => setShowProjDelModal(project)}
+            className="
            flex items-center pr-2 py-1 gap-2 text-sm active:scale-95 rounded-xl
            relative overflow-hidden bg-transparent cursor-pointer z-0 hover:text-red-500 transition-all font-semibold
            after:content-[''] after:absolute after:top-0 after:left-0 after:w-0 after:h-full after:bg-red-100
            after:transition-all after:duration-300 after:ease-in-out after:-z-10
            hover:after:w-full
          "
-        >
-          <span className="text-red-500 bg-red-100 p-2 rounded-xl">
-            <Trash2 className="w-4 h-4" />
-          </span>
-          Delete Project
-        </button>
+          >
+            <span className="text-red-500 bg-red-100 p-2 rounded-xl">
+              <Trash2 className="w-4 h-4" />
+            </span>
+            Delete Project
+          </button>
+        </div>
       </div>
+      <div>
+        <p className="text-gray-500 text-xs font-medium mb-2">NOTES</p>
+        <div className="bg-gray-100 p-4 rounded-lg text-gray-700 border active:scale-95">
+          <p className="text-sm text-center">Add Notes</p>
+        </div>
+      </div>
+
       <AnimatePresence mode="wait">
         {showProjDelModal && (
           <DelPojectModal
