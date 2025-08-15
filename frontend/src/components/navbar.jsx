@@ -2,16 +2,10 @@ import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useMyContext } from "../context/Context";
 import LogoutButton from "./logoutButton";
-import { FaHome, FaTasks, FaFile, FaSearch } from "react-icons/fa";
-import { IoMdSettings, IoMdHelp } from "react-icons/io";
-import { MdGroups } from "react-icons/md";
+import { FaSearch } from "react-icons/fa";
 import { GoSidebarCollapse, GoSidebarExpand } from "react-icons/go";
 import { useLocation } from "react-router-dom";
-import {
-  MdAutoDelete,
-  MdPeopleOutline,
-  MdOutlineAutoDelete,
-} from "react-icons/md";
+import { MdPeopleOutline, MdOutlineAutoDelete } from "react-icons/md";
 import { IoHomeOutline } from "react-icons/io5";
 import { GoTasklist } from "react-icons/go";
 import { CiFileOn } from "react-icons/ci";
@@ -87,11 +81,13 @@ const Navbar2 = () => {
 
 const Sidebar = () => {
   const { isMobile, showSidebar, setShowSidebar } = useMyContext();
+  // const location = useLocation();
+  // if (location.pathname === "/project") setShowSidebar(false);
   const [delayedClass, setDelayedClass] = useState(
-    "flex  flex-col items-center",
+    "flex  flex-col items-center"
   );
   const [delayedClass2, setDelayedClass2] = useState(
-    "flex  flex-col items-center",
+    "flex  flex-col items-center"
   );
 
   useEffect(() => {
@@ -120,7 +116,9 @@ const Sidebar = () => {
       ${showSidebar ? "w-[220px]" : "w-[60px]"}`}
     >
       <nav
-        className={`transition-all duration-300 gap-3 ${delayedClass} ${showSidebar ? "opacity-0" : "opacity-100"}`}
+        className={`transition-all duration-300 gap-3 ${delayedClass} ${
+          showSidebar ? "opacity-0" : "opacity-100"
+        }`}
       >
         <span
           onClick={() => setShowSidebar(!showSidebar)}
@@ -239,7 +237,9 @@ const Sidebar = () => {
       </nav>
 
       <nav
-        className={`transition-all duration-300 ${delayedClass2} ${showSidebar ? "opacity-100" : "opacity-0"} `}
+        className={`transition-all duration-300 ${delayedClass2} ${
+          showSidebar ? "opacity-100" : "opacity-0"
+        } `}
       >
         <div className="flex gap-2 items-center justify-between w-full mb-4">
           <span

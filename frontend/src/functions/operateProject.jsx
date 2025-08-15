@@ -1,5 +1,26 @@
+import { useMemo } from "react";
 import api from "../service/apiService";
-import { useNavigate } from "react-router-dom";
+
+import { useMyContext } from "../context/Context"; // adjust path
+
+export function calcPCompPct(projectId) {
+  const { projects, pTasks } = useMyContext();
+
+  return useMemo(() => {
+    const project = projects.find((p) => p._id === projectId);
+
+    if (!project || !project.tasks || project.tasks.length === 0) return 0;
+
+    const projectTasks = project.tasks
+      .map((taskId) => pTasks.find((t) => t._id === taskId))
+      .filter(Boolean);
+
+    const total = projectTasks.length;
+    const completed = projectTasks.filter((t) => t.isCompleted).length;
+
+    return total === 0 ? 0 : Math.round((completed / total) * 100);
+  }, [projects, pTasks, projectId]);
+}
 
 export const fetchProject = async (
   pageNum,

@@ -6,6 +6,7 @@ import { showError, showSuccess } from "./toaster";
 import api from "../service/apiService";
 import { useMyContext } from "../context/Context";
 import { Loader } from "./item";
+import { motion } from "framer-motion";
 
 export default function ProjectModal({ isOpen, onClose }) {
   const { setProjects, setPTasks } = useMyContext();
@@ -48,16 +49,23 @@ export default function ProjectModal({ isOpen, onClose }) {
     if (!isOpen) reset();
   }, [isOpen]);
 
-  if (!isOpen) return null;
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2, ease: "easeInOut" }}
       id="projectModal"
       className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-sm transition-all"
       onClick={onClose}
     >
       {loader && <Loader type={2} />}
-      <div
-        className="bg-white max-h-[99vh] overflow-y-auto w-full max-w-2xl mx-auto my-8 p-8 rounded-3xl shadow-xl border border-gray-200 relative animate-fadeIn"
+      <motion.div
+        initial={{ scale: 0.95 }}
+        animate={{ scale: 1 }}
+        exit={{ scale: 0.95 }}
+        transition={{ duration: 0.2, ease: "easeInOut" }}
+        className="bg-white h-full sm:h-auto sm:max-h-[99vh] overflow-y-auto w-full max-w-2xl mx-auto my-8 p-8 rounded-0 sm:rounded-3xl shadow-xl border border-gray-200 relative "
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -249,7 +257,7 @@ export default function ProjectModal({ isOpen, onClose }) {
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
