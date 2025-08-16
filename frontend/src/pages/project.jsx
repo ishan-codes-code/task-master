@@ -13,7 +13,6 @@ import { useMyContext } from "../context/Context";
 import classNames from "classnames";
 import { useState, useEffect, useMemo } from "react";
 import ProjectModal from "../components/projectModal";
-import NothingToSee from "../components/nothingToSee";
 import { format } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
@@ -25,7 +24,8 @@ import Timer from "../components/timer";
 import { updateTask } from "../functions/operateTasks";
 import { calcPCompPct } from "../functions/operateProject";
 import EllipsisDropdown from "../components/ellipse";
-import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
+import { getTimeLeft } from "../components/timer";
 
 function ProjectsSidebar({
   projects,
@@ -36,7 +36,7 @@ function ProjectsSidebar({
   return (
     <div className="bg-gray-100 h-full w-full pb-20 md:pb-0">
       <div className="">
-        <div className="flex justify-between items-center px-2">
+        <div className=" flex justify-between items-center px-2">
           <div className="flex items-center gap-2 border-[1.5px] border-gray-300 p-2 rounded-xl focus-within:border-blue-500 transition m-4 bg-gray-100 w-full min-w-0">
             <Search className="text-gray-500" />
             <input
@@ -55,40 +55,63 @@ function ProjectsSidebar({
         </div>
 
         <div className="grid grid-cols-1 divide-y divide-gray-300 overflow-y-auto">
-          {projects.map((project, index) => (
-            <div
-              key={index}
-              onClick={() => openPDetails(project)}
-              className={classNames(
-                "flex items-start gap-4 p-4 cursor-pointer",
-                project._id === selectedProject?._id && "bg-white"
-              )}
-            >
-              <img
-                src={`https://api.dicebear.com/7.x/shapes/svg?seed=${project._id}`}
-                alt="Abstract shapes"
-                loading="lazy"
-                className="rounded-lg w-8 h-8"
-              />
-              <div>
-                <h2 className="text-xl font-bold  relative leading-none">
-                  {project.title}
-                </h2>
-                <p className="text-sm text-gray-500 mt-1 mb-4 line-clamp-3">
-                  {project.desc}
-                </p>
-                <div className="flex">
-                  <span
-                    className={classNames(
-                      "flex items-center rounded-lg text-xs py-1 px-2 text-gray-500 bg-gray-200"
-                    )}
-                  >
-                    <Clock className="w-4 h-4 text-gray-600 mr-1" /> 1 week left
-                  </span>
+          {projects.map((project, index) => {
+            const timeLeft = getTimeLeft(project.dueDate);
+
+            return (
+              <div
+                key={index}
+                onClick={() => openPDetails(project)}
+                className={classNames(
+                  "flex items-start gap-4 p-4 cursor-pointer transition",
+                  project._id === selectedProject?._id && "bg-white"
+                )}
+              >
+                <img
+                  src={`https://api.dicebear.com/7.x/shapes/svg?seed=${project._id}`}
+                  alt="Abstract shapes"
+                  loading="lazy"
+                  className="rounded-lg w-8 h-8"
+                />
+                <div>
+                  <h2 className="text-xl font-bold  relative leading-none">
+                    {project.title}
+                  </h2>
+                  <p className="text-sm text-gray-500 mt-1 mb-4 line-clamp-3">
+                    {project.desc}
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={classNames(
+                        "flex items-center rounded-lg text-xs py-1 px-2 capitalize ",
+                        (project.priority === "low" &&
+                          "text-white bg-green-500") ||
+                          (project.priority === "medium" &&
+                            "text-black bg-yellow-400") ||
+                          (project.priority === "high" &&
+                            "bg-red-600 text-white")
+                      )}
+                    >
+                      {project.priority}
+                    </span>
+                    <span
+                      className={classNames(
+                        "flex items-center rounded-lg text-xs py-1 px-2 ",
+                        (timeLeft.d < 3 && "text-red-600 bg-red-100") ||
+                          (timeLeft.d >= 3 &&
+                            timeLeft.d < 7 &&
+                            "text-orange-600 bg-orange-100") ||
+                          (timeLeft.d > 7 && "text-gray-600 bg-gray-200")
+                      )}
+                    >
+                      <Clock className="w-4 h-4  mr-1" /> {timeLeft.dueText}{" "}
+                      left
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
         {/* <button onClick={() => setSelectedProject({})}>B</button> */}
       </div>
@@ -290,7 +313,7 @@ function LeftSec({ project, setDelTaskModal, closeContent, openDelModal }) {
         </div>
         {/* Tasks */}
 
-        <ul className="space-y-3">
+        <ul className="space-y-3 lg:space-y-0">
           {currentPTasks.map((task) => (
             <TasksCon
               key={task._id}
@@ -388,21 +411,6 @@ function RightSec({ project, closeContent, openDelModal }) {
         <p className="text-gray-500 text-xs font-medium mb-1">ACTIONS</p>
         <div>
           <button
-            onClick={openDelModal}
-            className="
-           flex items-center pr-2 py-1 gap-2 text-sm active:scale-95 rounded-xl
-           relative overflow-hidden bg-transparent cursor-pointer z-0 hover:text-red-500 transition-all font-semibold
-           after:content-[''] after:absolute after:top-0 after:left-0 after:w-0 after:h-full after:bg-red-100
-           after:transition-all after:duration-300 after:ease-in-out after:-z-10
-           hover:after:w-full
-         "
-          >
-            <span className="text-red-500 bg-red-100 p-2 rounded-xl">
-              <Trash2 className="w-4 h-4" />
-            </span>
-            Delete Project
-          </button>
-          <button
             onClick={closeContent}
             className="
            flex items-center pr-2 py-1 gap-2 text-sm active:scale-95 rounded-xl
@@ -416,6 +424,21 @@ function RightSec({ project, closeContent, openDelModal }) {
               <X className="w-4 h-4" />
             </span>
             Close
+          </button>
+          <button
+            onClick={openDelModal}
+            className="
+           flex items-center pr-2 py-1 gap-2 text-sm active:scale-95 rounded-xl
+           relative overflow-hidden bg-transparent cursor-pointer z-0 hover:text-red-500 transition-all font-semibold
+           after:content-[''] after:absolute after:top-0 after:left-0 after:w-0 after:h-full after:bg-red-100
+           after:transition-all after:duration-300 after:ease-in-out after:-z-10
+           hover:after:w-full
+         "
+          >
+            <span className="text-red-500 bg-red-100 p-2 rounded-xl">
+              <Trash2 className="w-4 h-4" />
+            </span>
+            Delete Project
           </button>
         </div>
       </div>

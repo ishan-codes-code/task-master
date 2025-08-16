@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 
 // Helper: formats number to always be two digits
-function getTimeLeft(target) {
+export function getTimeLeft(target) {
   const now = new Date();
   const targetDate = new Date(target);
   const diffInMS = targetDate - now;
 
   if (diffInMS <= 0) {
-    return { d: "00", h: "00", m: "00", s: "00" };
+    return { d: "00", h: "00", m: "00", s: "00", dueText: expired };
   }
 
   const diffInSec = Math.floor(diffInMS / 1000);
@@ -17,11 +17,18 @@ function getTimeLeft(target) {
 
   const format = (n) => String(n).padStart(2, "0");
 
+  const dueText =
+    (diffInDays >= 1 && `${diffInDays} days`) ||
+    (diffInHrs >= 1 && `${diffInHrs} hours`) ||
+    (diffInMin >= 1 && `${diffInMin} minutes`) ||
+    (diffInSec >= 1 && `${diffInSec} seconds`);
+
   return {
     d: format(diffInDays),
     h: format(diffInHrs % 24),
     m: format(diffInMin % 60),
     s: format(diffInSec % 60),
+    dueText: dueText,
   };
 }
 
